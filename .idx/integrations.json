@@ -1,0 +1,7 @@
+{
+  "firebase_hosting": {
+    "deploymentHostingUrl": "https://cpay-f149i.web.app"
+  },
+  "cloud_run_deploy": {},
+  "gemini_api": {}
+}

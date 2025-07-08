@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Main CPay User Data (Existing)
+    match /users/{userId} {
+      allow read, update: if request.auth.uid == userId;
+      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN'; // Core CPay admin
+      allow create: if false; // Created by backend triggers
+    }
+
+    match /users/{userId}/wallets/{currency} {
+      allow read: if request.auth.uid == userId;
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN'; // Core CPay admin
+      allow write: if false; // Only updated by trusted backend Cloud Functions
+    }
+
+    // KYC & KYB Submissions (Existing)
+    match /kycSubmissions/{submissionId} {
+      allow create: if request.auth.uid == request.resource.data.uid;
+      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    match /merchants/{merchantId} {
+      allow create: if request.auth != null;
+      allow read, update: if get(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid)).data.role IN ['OWNER', 'APPROVER'];
+      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    match /merchants/{merchantId}/users/{userId} {
+      allow read: if exists(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid));
+      allow write: if get(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid)).data.role == 'OWNER';
+      allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    // Transaction Ledger (Existing)
+    match /transactions/{transactionId} {
+      allow write: if false; // Immutable from client
+      allow read: if request.auth.uid == resource.data.sender.uid || request.auth.uid == resource.data.receiver.uid;
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    //======= PARTNER PORTAL RULES =======//
+    match /partners/{partnerId} {
+      // Core CPay admins can read/write partners (for onboarding partners themselves)
+      allow create, read, update: if request.auth.token.role == 'ADMIN';
+
+      // Partner users can read their own partner's main document if they belong to that partner
+      allow read: if request.auth.token.partnerId == partnerId;
+
+      // Only 'OWNER' role within the partner can update the partner's main document
+      allow update: if request.auth.token.partnerId == partnerId && request.auth.token.role == 'OWNER';
+    }
+
+    match /partners/{partnerId}/users/{userId} {
+      // A partner user can read users in their OWN partner's sub-collection
+      allow read: if request.auth.token.partnerId == partnerId;
+
+      // Only 'OWNER' or 'ADMIN' roles within the partner can create/update/delete partner_users
+      allow write: if request.auth.token.partnerId == partnerId && request.auth.token.role IN ['OWNER', 'ADMIN'];
+    }
+
+    // Payout Batches (Future collection)
+    match /payoutBatches/{batchId} {
+        // Only partner users of the associated partner can read/create payout batches
+        allow create: if request.auth.token.partnerId == request.resource.data.partnerId;
+        allow read: if request.auth.token.partnerId == resource.data.partnerId;
+        // Updates and deletes only via backend functions
+        allow update, delete: if false;
+    }
+
+    // Payout Logs (Future collection)
+    match /payoutLogs/{logId} {
+        // Only partner users of the associated partner can read payout logs
+        allow read: if request.auth.token.partnerId == resource.data.partnerId;
+        allow write: if false; // Only written by backend functions
+    }
+
+    // Webhook Logs (Future collection)
+    match /webhookLogs/{logId} {
+        // Only partner users of the associated partner can read webhook logs
+        allow read: if request.auth.token.partnerId == resource.data.partnerId;
+        allow write: if false; // Only written by backend functions
+    }
+
+    // Audit Logs (Future collection)
+    match /auditLogs/{logId} {
+        // Partner users can read audit logs for their own partnerId
+        allow read: if request.auth.token.partnerId == resource.data.partnerId;
+        // Core CPay admins can read all audit logs
+        allow read: if request.auth.token.role == 'ADMIN';
+        allow write: if false; // Only written by backend functions
+    }
+
+  }
+}
