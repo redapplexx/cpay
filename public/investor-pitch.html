@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Investor Pitch - CPay Platform</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a67d8;
+      --bg: #0c0c0c;
+      --bg-alt: #111;
+      --text: #fff;
+      --muted: #aaa;
+      --accent: #764ba2;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 120px 20px 60px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .header h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--text) 0%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      font-size: 1.3rem;
+      color: var(--muted);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 32px;
+      margin-bottom: 60px;
+    }
+
+    .metric-card {
+      background: var(--bg-alt);
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid #222;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--primary);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .metric-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .metric-label {
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .metric-description {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .section {
+      margin-bottom: 80px;
+    }
+
+    .section h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 32px;
+      color: var(--text);
+    }
+
+    .market-analysis {
+      background: var(--bg-alt);
+      border-radius: 16px;
+      padding: 40px;
+      border: 1px solid #222;
+      margin-bottom: 40px;
+    }
+
+    .market-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    .market-stat {
+      text-align: center;
+    }
+
+    .market-stat-number {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--success);
+      margin-bottom: 8px;
+    }
+
+    .market-stat-label {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .downloads {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .download-card {
+      background: var(--bg-alt);
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid #222;
+      transition: all 0.3s ease;
+    }
+
+    .download-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .download-card h3 {
+      color: var(--primary);
+      margin-bottom: 12px;
+      font-size: 1.2rem;
+    }
+
+    .download-card p {
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+    }
+
+    .download-btn {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+      color: #fff;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
+
+    .timeline-item {
+      background: var(--bg-alt);
+      border-radius: 12px;
+      padding: 24px;
+      border-left: 4px solid var(--primary);
+      position: relative;
+    }
+
+    .timeline-item h4 {
+      color: var(--primary);
+      margin-bottom: 12px;
+      font-size: 1.1rem;
+    }
+
+    .timeline-item p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .back-link {
+      display: inline-block;
+      color: var(--primary);
+      text-decoration: none;
+      margin-bottom: 32px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: var(--accent);
+    }
+
+    .contact-section {
+      text-align: center;
+      background: var(--bg-alt);
+      border-radius: 16px;
+      padding: 40px;
+      border: 1px solid #222;
+    }
+
+    .contact-section h3 {
+      font-size: 1.8rem;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .contact-section p {
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .contact-btn {
+      background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+      color: #fff;
+      padding: 16px 32px;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .contact-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 100px 20px 40px;
+      }
+
+      .header h1 {
+        font-size: 2.5rem;
+      }
+
+      .header p {
+        font-size: 1.1rem;
+      }
+
+      .section h2 {
+        font-size: 2rem;
+      }
+
+      .metric-number {
+        font-size: 2.5rem;
+      }
+
+      .market-analysis {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <a href="/" class="back-link">← Back to Platform</a>
+  
+  <div class="header">
+    <h1>Investor Pitch</h1>
+    <p>CPay: Building the infrastructure layer for the next generation of fintech empires</p>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-number">$2.5T</div>
+      <div class="metric-label">Global FX Market</div>
+      <div class="metric-description">Daily trading volume we're targeting</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">44+</div>
+      <div class="metric-label">Cloud Functions</div>
+      <div class="metric-description">Production-ready infrastructure</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">99.9%</div>
+      <div class="metric-label">Uptime SLA</div>
+      <div class="metric-description">Enterprise-grade reliability</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-number">50ms</div>
+      <div class="metric-label">Response Time</div>
+      <div class="metric-description">Real-time transaction processing</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Market Opportunity</h2>
+    <div class="market-analysis">
+      <p>The global fintech infrastructure market is experiencing unprecedented growth, driven by digital transformation, regulatory changes, and the need for scalable, secure financial systems. CPay is positioned at the intersection of three massive markets:</p>
+      
+      <div class="market-stats">
+        <div class="market-stat">
+          <div class="market-stat-number">$6.6T</div>
+          <div class="market-stat-label">Global Fintech Market</div>
+        </div>
+        <div class="market-stat">
+          <div class="market-stat-number">$2.5T</div>
+          <div class="market-stat-label">Daily FX Volume</div>
+        </div>
+        <div class="market-stat">
+          <div class="market-stat-number">$1.2T</div>
+          <div class="market-stat-label">Digital Payments Market</div>
+        </div>
+        <div class="market-stat">
+          <div class="market-stat-number">25%</div>
+          <div class="market-stat-label">Annual Growth Rate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Investment Materials</h2>
+    <div class="downloads">
+      <div class="download-card">
+        <h3>📊 Executive Summary</h3>
+        <p>High-level overview of CPay's vision, market opportunity, and growth strategy.</p>
+        <a href="#" class="download-btn" onclick="downloadFile('executive-summary')">Download PDF</a>
+      </div>
+      <div class="download-card">
+        <h3>📈 Financial Projections</h3>
+        <p>Detailed 5-year financial model with revenue projections and unit economics.</p>
+        <a href="#" class="download-btn" onclick="downloadFile('financial-model')">Download Excel</a>
+      </div>
+      <div class="download-card">
+        <h3>🏗️ Technical Architecture</h3>
+        <p>Comprehensive technical documentation and system architecture overview.</p>
+        <a href="#" class="download-btn" onclick="downloadFile('technical-docs')">Download PDF</a>
+      </div>
+      <div class="download-card">
+        <h3>📋 Due Diligence Package</h3>
+        <p>Complete due diligence materials including legal, compliance, and security documentation.</p>
+        <a href="#" class="download-btn" onclick="downloadFile('due-diligence')">Download ZIP</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Roadmap & Milestones</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>Q1 2025 - Platform Launch</h4>
+        <p>Full production deployment with initial enterprise customers and government partnerships.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Q2 2025 - Market Expansion</h4>
+        <p>Geographic expansion to 3 new markets with regulatory compliance and local partnerships.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Q3 2025 - AI Integration</h4>
+        <p>Advanced AI features including predictive analytics, fraud detection, and automated compliance.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Q4 2025 - Series A</h4>
+        <p>Major funding round to accelerate growth, expand team, and enter new vertical markets.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-section">
+    <h3>Ready to Invest?</h3>
+    <p>Join us in building the future of fintech infrastructure. Let's discuss how CPay can deliver exceptional returns while transforming the financial services landscape.</p>
+    <a href="/request-access.html?type=investor" class="contact-btn">Schedule Investor Call</a>
+  </div>
+</div>
+
+<script>
+  function downloadFile(type) {
+    // In a real implementation, these would be actual file downloads
+    const files = {
+      'executive-summary': {
+        name: 'CPay_Executive_Summary.pdf',
+        url: '#'
+      },
+      'financial-model': {
+        name: 'CPay_Financial_Model.xlsx',
+        url: '#'
+      },
+      'technical-docs': {
+        name: 'CPay_Technical_Architecture.pdf',
+        url: '#'
+      },
+      'due-diligence': {
+        name: 'CPay_Due_Diligence_Package.zip',
+        url: '#'
+      }
+    };
+
+    const file = files[type];
+    if (file) {
+      // For demo purposes, show an alert
+      alert(`Downloading ${file.name}...\n\nIn a production environment, this would trigger an actual file download.`);
+      
+      // In production, you would use:
+      // window.open(file.url, '_blank');
+      // or
+      // const link = document.createElement('a');
+      // link.href = file.url;
+      // link.download = file.name;
+      // link.click();
+    }
+  }
+
+  // Animate metrics on scroll
+  const observerOptions = {
+    threshold: 0.5,
+    rootMargin: '0px 0px -100px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.metric-card, .timeline-item').forEach(item => {
+    item.style.opacity = '0';
+    item.style.transform = 'translateY(20px)';
+    item.style.transition = 'all 0.6s ease';
+    observer.observe(item);
+  });
+</script>
+
+</body>
+</html> 

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RedAppleX | Custom App Development in 3 Days</title>
+    <meta name="description" content="Get your custom MVP, fintech platform, or internal tool built in just 3 days. No templates. No agencies. Just elite-level results.">
+    
+    <!-- Redirect Script -->
+    <script>
+        if (window.location.hostname !== 'fxtoll.redapplex.com') {
+            window.location.href = 'http://fxtoll.redapplex.com';
+        }
+    </script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <!-- Structured Data (JSON-LD) for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Mark Johnson Banatao",
+      "url": "https://redapplex.com",
+      "jobTitle": "AI Software Architect",
+      "brand": {
+        "@type": "Brand",
+        "name": "RedAppleX"
+      },
+      "knowsAbout": ["Enterprise Software", "MVP Development", "Fintech Infrastructure", "Rapid Application Development", "AI-powered tools"]
+    }
+    </script>
+
+    <style>
+        :root {
+            --color-bg: #000000;
+            --color-text: #F3F4F6; /* gray-100 */
+            --color-accent-red: #FF2D55;
+            --color-border: rgba(255, 255, 255, 0.1);
+        }
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .font-heading { font-family: 'Space Grotesk', sans-serif; }
+        .hero-bg {
+            background-image: radial-gradient(circle at 25% 30%, rgba(255, 45, 85, 0.15), transparent 30%),
+                              radial-gradient(circle at 75% 70%, rgba(255, 255, 255, 0.05), transparent 30%);
+            background-size: 100% 100%;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn-primary {
+            @apply px-8 py-3 font-heading font-semibold text-lg text-black bg-white rounded-md transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-red-500/30;
+        }
+        .btn-secondary {
+            @apply px-8 py-3 font-heading font-semibold text-lg text-white bg-transparent border-2 border-white/30 rounded-md transition-all duration-300 hover:bg-white hover:text-black hover:border-white;
+        }
+        /* Fade-in Animation */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s cubic-bezier(0.65, 0, 0.35, 1), transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+        .fade-in-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="header">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-center h-20">
+                <a href="#" aria-label="RedAppleX Home">
+                    <img src="../redapplex-terminal/assets/images/logo-redapple.png" alt="RedAppleX Logo" class="h-8 w-auto">
+                </a>
+                <nav>
+                    <a href="mailto:talk@the-redapple.com" class="btn-secondary hidden sm:inline-block">Let's Talk</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="relative min-h-screen flex items-center justify-center text-center overflow-hidden">
+            <div class="absolute inset-0 hero-bg -z-10" id="hero-bg-parallax"></div>
+            <div class="relative z-10 px-6">
+                <h1 class="font-heading text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tighter leading-tight max-w-4xl mx-auto">
+                    Get Your Custom App Built in 3 Days
+                </h1>
+                <p class="font-heading text-2xl sm:text-3xl text-gray-400 mt-4">
+                    No Templates. No Agencies. Just Results.
+                </p>
+                <div class="mt-10">
+                    <a href="mailto:talk@the-redapple.com" class="btn-primary">Start Your Build</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature Grid -->
+        <section id="features" class="py-24 sm:py-32">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center">
+                    <p class="font-heading text-lg text-[var(--color-accent-red)]">Your Vision, Delivered</p>
+                    <h2 class="font-heading text-4xl sm:text-5xl font-bold mt-2">What You Get in 3 Days</h2>
+                </div>
+                <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Feature 1 -->
+                    <div class="fade-in-up p-8 border border-white/10 rounded-xl bg-gray-900/30 text-center transform hover:-translate-y-2 transition-transform duration-300">
+                        <ion-icon name="rocket-outline" class="text-4xl text-[var(--color-accent-red)] mx-auto"></ion-icon>
+                        <h3 class="font-heading text-2xl font-semibold mt-4">Investor-Ready MVPs</h3>
+                        <p class="mt-2 text-gray-400">Launch a robust, scalable product that feels like v2.0, built to impress VCs and win first customers.</p>
+                    </div>
+                    <!-- Feature 2 -->
+                    <div class="fade-in-up p-8 border border-white/10 rounded-xl bg-gray-900/30 text-center transform hover:-translate-y-2 transition-transform duration-300" style="transition-delay: 100ms;">
+                        <ion-icon name="server-outline" class="text-4xl text-[var(--color-accent-red)] mx-auto"></ion-icon>
+                        <h3 class="font-heading text-2xl font-semibold mt-4">Internal Tools</h3>
+                        <p class="mt-2 text-gray-400">Automate workflows with custom dashboards, CRMs, and operational software that supercharge your team.</p>
+                    </div>
+                    <!-- Feature 3 -->
+                    <div class="fade-in-up p-8 border border-white/10 rounded-xl bg-gray-900/30 text-center transform hover:-translate-y-2 transition-transform duration-300" style="transition-delay: 200ms;">
+                        <ion-icon name="card-outline" class="text-4xl text-[var(--color-accent-red)] mx-auto"></ion-icon>
+                        <h3 class="font-heading text-2xl font-semibold mt-4">Fintech Dashboards</h3>
+                        <p class="mt-2 text-gray-400">Build secure payment gateways, ledger systems, and compliance tools with institutional-grade reliability.</p>
+                    </div>
+                    <!-- Feature 4 -->
+                    <div class="fade-in-up p-8 border border-white/10 rounded-xl bg-gray-900/30 text-center transform hover:-translate-y-2 transition-transform duration-300" style="transition-delay: 300ms;">
+                        <ion-icon name="hardware-chip-outline" class="text-4xl text-[var(--color-accent-red)] mx-auto"></ion-icon>
+                        <h3 class="font-heading text-2xl font-semibold mt-4">AI Admin Panels</h3>
+                        <p class="mt-2 text-gray-400">Create intuitive control panels to manage, monitor, and fine-tune your proprietary AI models and data pipelines.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Preview -->
+        <section id="demo" class="py-24 sm:py-32">
+            <div class="max-w-5xl mx-auto px-6 text-center">
+                <h2 class="font-heading text-4xl sm:text-5xl font-bold fade-in-up">Proof, Not Promises.</h2>
+                <p class="text-lg text-gray-400 mt-4 max-w-2xl mx-auto fade-in-up" style="transition-delay: 100ms;">This live demo of a real-time FX trading pass-through was built using the same 3-day rapid development process.</p>
+                <a href="https://fxpass2.redapplex.com" target="_blank" rel="noopener noreferrer" class="block mt-12 group relative fade-in-up" style="transition-delay: 200ms;">
+                    <div class="absolute inset-0 bg-black/50 group-hover:bg-black/30 transition-colors duration-300 rounded-2xl"></div>
+                    <img src="https://i.imgur.com/eBf23t8.png" alt="FXPass2 Demo Application Screenshot" class="rounded-2xl shadow-2xl shadow-red-900/20 w-full">
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <div class="px-6 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white font-heading text-xl group-hover:scale-105 group-hover:bg-white/20 transition-all duration-300">
+                            View Live Demo
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Timeline -->
+        <section id="timeline" class="py-24 sm:py-32">
+            <div class="max-w-3xl mx-auto px-6">
+                <div class="text-center mb-20">
+                    <h2 class="font-heading text-4xl sm:text-5xl font-bold">What Happens in 72 Hours</h2>
+                    <p class="text-lg text-gray-400 mt-4">A hyper-focused sprint from concept to launch.</p>
+                </div>
+                <div class="relative">
+                    <div class="absolute left-4 md:left-1/2 w-0.5 h-full bg-[var(--color-border)] -translate-x-1/2"></div>
+                    <!-- Day 1 -->
+                    <div class="relative flex items-start mb-12 fade-in-up">
+                        <div class="hidden md:block w-1/2"></div>
+                        <div class="absolute left-4 md:left-1/2 w-4 h-4 bg-[var(--color-accent-red)] rounded-full -translate-x-1/2 mt-1 border-4 border-black"></div>
+                        <div class="w-full md:w-1/2 md:pl-12 ml-10 md:ml-0">
+                            <p class="font-heading text-sm text-gray-400">Day 1</p>
+                            <h3 class="font-heading text-2xl font-bold mt-1">Architecture & Core Build</h3>
+                            <p class="mt-2 text-gray-300">Scope definition, data schema mapping, and foundational backend logic. You get a private repo and API endpoint access by EOD.</p>
+                        </div>
+                    </div>
+                    <!-- Day 2 -->
+                    <div class="relative flex items-start mb-12 fade-in-up">
+                        <div class="hidden md:block w-1/2 pr-12 text-right">
+                             <p class="font-heading text-sm text-gray-400">Day 2</p>
+                            <h3 class="font-heading text-2xl font-bold mt-1">API & Frontend Integration</h3>
+                            <p class="mt-2 text-gray-300">The API is completed and documented. The high-performance UI is connected, bringing the core features to life for live interaction.</p>
+                        </div>
+                        <div class="absolute left-4 md:left-1/2 w-4 h-4 bg-[var(--color-accent-red)] rounded-full -translate-x-1/2 mt-1 border-4 border-black"></div>
+                         <div class="w-full md:w-1/2 md:hidden ml-10">
+                            <p class="font-heading text-sm text-gray-400">Day 2</p>
+                            <h3 class="font-heading text-2xl font-bold mt-1">API & Frontend Integration</h3>
+                            <p class="mt-2 text-gray-300">The API is completed and documented. The high-performance UI is connected, bringing the core features to life for live interaction.</p>
+                        </div>
+                    </div>
+                     <!-- Day 3 -->
+                    <div class="relative flex items-start fade-in-up">
+                        <div class="hidden md:block w-1/2"></div>
+                        <div class="absolute left-4 md:left-1/2 w-4 h-4 bg-[var(--color-accent-red)] rounded-full -translate-x-1/2 mt-1 border-4 border-black"></div>
+                        <div class="w-full md:w-1/2 md:pl-12 ml-10 md:ml-0">
+                             <p class="font-heading text-sm text-gray-400">Day 3</p>
+                            <h3 class="font-heading text-2xl font-bold mt-1">Deployment & Handover</h3>
+                            <p class="mt-2 text-gray-300">Final testing, security hardening, and deployment to your cloud. You receive full source code and a live, working application.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trusted By -->
+        <section id="trusted-by" class="py-24">
+            <div class="max-w-7xl mx-auto px-6">
+                <p class="text-center font-heading text-sm uppercase tracking-widest text-gray-500">Powering platforms for founders & executives</p>
+                <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 sm:gap-8">
+                    <div class="fade-in-up glass-card rounded-xl p-6 flex items-center justify-center transition-all duration-300 hover:border-white/30">
+                        <img src="https://tailwindui.com/img/logos/158x48/transistor-logo-white.svg" alt="Transistor Logo" class="h-8 w-auto filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    </div>
+                    <div class="fade-in-up glass-card rounded-xl p-6 flex items-center justify-center transition-all duration-300 hover:border-white/30" style="transition-delay: 50ms;">
+                        <img src="https://tailwindui.com/img/logos/158x48/tuple-logo-white.svg" alt="Tuple Logo" class="h-8 w-auto filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    </div>
+                    <div class="fade-in-up glass-card rounded-xl p-6 flex items-center justify-center transition-all duration-300 hover:border-white/30" style="transition-delay: 100ms;">
+                        <img src="https://tailwindui.com/img/logos/158x48/statickit-logo-white.svg" alt="StaticKit Logo" class="h-8 w-auto filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    </div>
+                    <div class="fade-in-up glass-card rounded-xl p-6 flex items-center justify-center transition-all duration-300 hover:border-white/30" style="transition-delay: 150ms;">
+                        <img src="https://tailwindui.com/img/logos/158x48/mirage-logo-white.svg" alt="Mirage Logo" class="h-8 w-auto filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    </div>
+                    <div class="fade-in-up glass-card rounded-xl p-6 flex items-center justify-center transition-all duration-300 hover:border-white/30" style="transition-delay: 200ms;">
+                        <img src="https://tailwindui.com/img/logos/158x48/laravel-logo-white.svg" alt="Laravel Logo" class="h-8 w-auto filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    </div>
+                    <div class="fade-in-up glass-card rounded-xl p-6 flex items-center justify-center transition-all duration-300 hover:border-white/30" style="transition-delay: 250ms;">
+                        <img src="https://tailwindui.com/img/logos/158x48/statamic-logo-white.svg" alt="Statamic Logo" class="h-8 w-auto filter grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section id="testimonials" class="py-24 sm:py-32">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                 <div id="testimonial-slider" class="relative">
+                    <!-- Slide 1 -->
+                    <div class="testimonial-slide">
+                        <p class="text-2xl sm:text-3xl leading-snug font-medium">"We went from a slide deck to a functional, investor-ready platform in days. This is the fastest, highest-ROI development I've ever experienced."</p>
+                        <div class="mt-8">
+                            <p class="font-heading font-semibold text-lg">Jenna Liu</p>
+                            <p class="text-gray-400">Founder, a fintech startup</p>
+                        </div>
+                    </div>
+                    <!-- Slide 2 -->
+                    <div class="testimonial-slide hidden">
+                        <p class="text-2xl sm:text-3xl leading-snug font-medium">"The internal ops dashboard saved our team 20+ hours a week. It paid for itself in the first month. An absolute game-changer for our productivity."</p>
+                        <div class="mt-8">
+                            <p class="font-heading font-semibold text-lg">Carlos Gomez</p>
+                            <p class="text-gray-400">COO, a logistics unicorn</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-10 flex justify-center gap-4">
+                    <button id="prev-testimonial" aria-label="Previous testimonial" class="p-3 rounded-full border border-white/20 hover:bg-white/10 transition-colors">
+                        <ion-icon name="arrow-back-outline"></ion-icon>
+                    </button>
+                    <button id="next-testimonial" aria-label="Next testimonial" class="p-3 rounded-full border border-white/20 hover:bg-white/10 transition-colors">
+                        <ion-icon name="arrow-forward-outline"></ion-icon>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section id="cta" class="py-24 sm:py-32">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                <h2 class="font-heading text-4xl sm:text-5xl font-bold fade-in-up">Ready to Build Something Extraordinary?</h2>
+                <p class="text-xl text-gray-400 mt-6 max-w-2xl mx-auto fade-in-up" style="transition-delay: 100ms;">Let's turn your vision into a working application in 72 hours.</p>
+                <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center fade-in-up" style="transition-delay: 200ms;">
+                    <a href="mailto:talk@the-redapple.com" class="btn-primary">Start Your Build</a>
+                    <a href="https://t.me/redapplex" target="_blank" rel="noopener noreferrer" class="btn-secondary">
+                        <ion-icon name="logo-telegram" class="inline mr-2"></ion-icon>
+                        Chat on Telegram
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-white/10 py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-4 mb-4 md:mb-0">
+                    <img src="../redapplex-terminal/assets/images/logo-redapple.png" alt="RedAppleX Logo" class="h-6 w-auto">
+                    <span class="text-gray-400">Advertisement on a different level.</span>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="mailto:talk@the-redapple.com" class="text-gray-400 hover:text-white transition-colors">
+                        <ion-icon name="mail-outline" class="text-2xl"></ion-icon>
+                    </a>
+                    <a href="https://t.me/redapplex" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors">
+                        <ion-icon name="logo-telegram" class="text-2xl"></ion-icon>
+                    </a>
+                    <a href="https://github.com/redapplex" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition-colors">
+                        <ion-icon name="logo-github" class="text-2xl"></ion-icon>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
+                <p>&copy; 2024 RedAppleX. All rights reserved. Built for founders who demand excellence.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating CTA Bar -->
+    <div id="floating-cta" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-40 opacity-0 transition-opacity duration-300">
+        <div class="flex gap-3">
+            <a href="mailto:talk@the-redapple.com" class="px-6 py-3 bg-white text-black font-heading font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                Start Your Build
+            </a>
+            <a href="https://t.me/redapplex" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-[var(--color-accent-red)] text-white font-heading font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+                <ion-icon name="logo-telegram" class="inline mr-2"></ion-icon>
+                Chat
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all fade-in elements
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Parallax effect for hero background
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroBg = document.getElementById('hero-bg-parallax');
+            if (heroBg) {
+                heroBg.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+
+        // Header background on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 100) {
+                header.classList.add('bg-black/80', 'backdrop-blur-sm');
+            } else {
+                header.classList.remove('bg-black/80', 'backdrop-blur-sm');
+            }
+        });
+
+        // Floating CTA visibility
+        window.addEventListener('scroll', () => {
+            const floatingCta = document.getElementById('floating-cta');
+            const ctaSection = document.getElementById('cta');
+            if (ctaSection) {
+                const ctaTop = ctaSection.offsetTop;
+                if (window.scrollY > ctaTop - window.innerHeight) {
+                    floatingCta.classList.add('opacity-100');
+                } else {
+                    floatingCta.classList.remove('opacity-100');
+                }
+            }
+        });
+
+        // Testimonial slider
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.testimonial-slide');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('hidden', i !== index);
+            });
+        }
+
+        document.getElementById('next-testimonial').addEventListener('click', () => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        });
+
+        document.getElementById('prev-testimonial').addEventListener('click', () => {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        });
+
+        // Auto-advance testimonials
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }, 5000);
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

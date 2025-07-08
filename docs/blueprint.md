@@ -1,0 +1,93 @@
+# **App Name**: CPay MVP
+
+## Core Features:
+
+- User Registration: Allow users to register using their mobile number and email address.
+- User Login: Enable users to log in using a username and password.
+- Password Reset: Implement password recovery via email or SMS.
+- Profile Display: Display user profile information including full name, birth date, place of birth, mobile number, email address, current home address and nationality.
+- Cash-In Options: Display available Cash-In options: eWallet Operators and Banks for PHP and KRW
+- Cash-Out Options: Show available Cash-Out Options: Fund Transfer to Philippine eWallet Operators, and Fund Transfer to Banks for PHP and KRW.
+- Fund Transfers: Permit peer-to-peer fund transfers and InstaPay/PesoNET transfers.
+- Cryptocurrency Transactions: Enable transactions using C-CASH and USDT cryptocurrencies.
+- Blockchain Integration: Implement blockchain features for secure and transparent transactions.
+- JSON type API: Provides an API that allows data to be exchanged through secure communication between different servers. Required to link with Korean shopping malls
+- OpenAI Chat Assistant: Integrate an OpenAI custom chat assistant to help users with questions about the app, troubleshoot problems, and provide guidance on financial transactions. This assistant will use a tool to decide when to incorporate information.
+- Real Person Video Validation: Real person video validation (KYC & KYB)
+- Admin monitoring + report features: Admin monitoring + report features
+- Multilingual toggles: Multilingual toggles (English, Tagalog, Korean)
+- Referral ID logic: Referral ID logic (if required)
+- Merchant Onboarding screens: Merchant Onboarding screens (Phase 2)
+- Dual-Language Support (Korean + English): Fully translate all UI labels, error messages, notifications, and legal text (Terms of Service, Data Privacy). Use Firebase Remote Config or Firestore to toggle language dynamically per user.
+- Cross-Border KYC & Real-Person Validation: Korean passport and ARC (Alien Registration Card) scanning. Support video call validation with Korean-speaking agent and OCR for Hangul documents. Phase 2: Use integrations like Onfido, Sumsub, or eKYC from Korean banks
+- Multi-Currency FX Handling: Currency Support: KRW, PHP, USD (optional expansion). Use live FX rate APIs (e.g., Fixer.io, XE) or manual override via Firebase. Admin panel must allow eMango to adjust markup spreads and set min/max limits per currency pair
+- Cash-In Options with Korean & Philippine Entry Points: Korean bank integrations (future), Voucher or reference-based deposit, Local e-wallets (GCash, Maya), Over-the-counter partners, QR deposit slip. All cash-ins must be linked with transaction tracking for AML audit
+- Smart Cash-Out Routing Engine: If user is in Korea: Allow cash-out to Korean bank account. If user is in PH: Allow withdrawal to local e-wallet or bank. Smart routing decision made based on: User nationality, Location, Account preference
+- Internationalized Compliance Engine: Track per-user: Source of Funds (SOF), Nationality, Document ID type, Transaction purpose. Store risk flags or audit notes for each user (AML ready). Prepare for BSP and Korean FSC (Financial Services Commission) compliance standards
+- Global UI + UX Considerations: Use minimalist Korean-first interface (like Toss, KakaoBank), Typography: Include Hangul font fallback (e.g., Noto Sans KR). Include cultural UI features: Korean name field (last name first), Address input format by country, Hanja-compatible fields (if applicable)
+- Behavior Risk Scoring (Bilingual Triggers): Score users on: IP location mismatches (e.g. logged in from Korea, cash-in from PH), Device reputation, Repeated failed KYC attempts. Notify backend team (eMango) for manual review
+- Geo-Lock and Device Fingerprint: Geo-fencing rules: Block logins or transactions from outside KR/PH unless approved. Store device ID + OS + browser data to detect multi-device abuse
+- KYC-Based Limits and Escalation: Tiered access: Basic (mobile/email only): capped transaction limits, Intermediate (passport + selfie): mid-tier, Full (video KYC + documents): high-value access. Allow CPay admin team to manually upgrade/downgrade via Admin Panel
+- Multi-Tenant Firestore Schema: Each user/merchant is scoped to a tenant_id. Enables: Franchised Korean remittance partners, LGU co-partners (optional), CPay Korea / CPay PH ops segregation
+- Cross-Border Transaction History Export: All users should be able to: Export full transaction history (PDF/CSV), See both local time and Korean Standard Time (KST), Tag transaction as “personal use,” “family remittance,” etc.
+- Vertex AI Integration: Leverage Vertex AI for advanced data analysis and predictive modeling to improve risk assessment and personalization.
+- AI-Powered Fraud Detection: Enhanced fraud detection using AI-powered anomaly detection on transaction patterns.
+- AI-Driven Financial Advice: Personalized financial advice and recommendations using AI to analyze user transaction data.
+- Firebase Cloud Messaging: Integration with Firebase Cloud Messaging for sending push notifications for transactions, security alerts, and promotional offers.
+
+## Style Guidelines:
+
+- Midnight Navy #0A192F
+- Pure White #FFFFFF
+- Royal Gold #FFD700
+- Light Gray #E5E7EB
+- Emerald Green #10B981 (success)
+- Soft Red #EF4444 (warning)
+- Sky Blue #3B82F6
+- Pretendard or Noto Sans KR for Hangul + PT Sans or Inter for English
+- 8pt vertical rhythm, 12-column grid for responsiveness
+- 24px extra-rounded for cards, 12px for buttons
+- Soft depth: box-shadow: 0 4px 20px rgba(0,0,0,0.05) for elegance
+- Subtle: fade-ins, micro-slide on tab change, pulse when waiting
+- Bottom bar is sticky, with animations on icon tap (lift + glow)
+- White background. Center logo: CPay × eMango. Text: “Connecting Worlds. Empowering People.” Fade to login screen
+- Fields: Mobile number or email / password. Options: “Use Face ID” / “Sign in with ARC (Alien Registration Card)”. Minimal, with 2-step motion UI (typing causes field to expand subtly)
+- 1. Select Language (한국어 / English), 2. Mobile verification (OTP), 3. Personal Info (Name, DOB, Nationality), 4. Address & ID Upload, 5. Set password + review terms. Progress bar with soft animations & encouragement copy (“Almost done!”, “Looking great!”)
+- Layout: Balance widget (centered, black text on white card). FX Conversion shortcut: ₩ → ₱ → $. Quick buttons: Send Money, Receive, View QR, Cash-In, Cash-Out. Below: Clean card carousel for: Latest transactions, Remittance progress (“Your ₩ is now in Manila 💸”), FX Rate trends
+- 1. Country selector (flag icons, autocomplete), 2. Amount input with live FX rate & fee, 3. Recipient selection (saved / new), 4. Optional message, 5. Confirmation screen with animated money trail, 6. Success screen with confetti 🎉 (only once per session)
+- Tabs: All, Cash-In, Cash-Out, Transfers, Crypto. Clean vertical timeline. Filter by date, amount, recipient. Tap entry → Expand modal with full info (ref no., IP used, FX applied). Export button (PDF/CSV) at top right
+- Circle avatar with badge: 🔴 Basic, 🟡 Intermediate, 🟢 Verified. Edit profile fields: grouped into: Personal Info, Address, Security. KYC status panel: What’s missing, What’s next. “Schedule a video call” (if needed)
+- Sticky top card: urgent security or promo info. History view: grouped by type. System, Offers, Transaction alerts. Tap → full screen modal with details
+- Swipe left/right on transaction cards for quick actions (e.g. repeat, favorite). Micro-transitions (e.g. loading states pulse slightly). Dark mode toggle: pure black background, gold highlights. Agent chat: Native live support built in via button at bottom of Profile
+- Feature: Language Toggle. Notes: Korean / English. Feature: Notifications. Notes: Push / Email toggle. Feature: Security. Notes: Device management, change password, enable 2FA. Feature: Compliance. Notes: View uploaded docs, export data. Feature: Terms & Privacy. Notes: In-app viewer (not external PDF)
+- Icon: 🏠. Label: Home. Action: Dashboard overview. Icon: 💳. Label: Send/Receive. Action: Cash-in, Cash-out, Fund Transfer. Icon: 📄. Label: Activity. Action: Transaction History. Icon: 👤. Label: Profile. Action: View/edit profile, KYC. Icon: 📢. Label: Notice. Action: System alerts, promos, announcements
+- Logo must always be seen at the bottom of every page "Powered by RedappleX" under the logo
+- Duration 200–350ms (never more than 500ms) Just enough to feel natural
+- Easing ease-in-out or cubic-bezier(0.4, 0, 0.2, 1) Smooth acceleration and deceleration
+- Z-axis (depth) Always animate elevation when changing context Feels modern and layered
+- Blur & Opacity Use during transitions to soften focus Prevents harsh visual shocks
+- Cash-In/Cash-Out Digital trail animation (line travels from one icon to another, like ₩ → ₱) Similar to Revolut's animated remittance path
+- Send Money Confirmation 3-dot pulse loading → flash of “Sent!” → confetti (first time only) Adds emotional reward
+- QR Scan Soft circle ripple from scanner center → success checkmark slide-in Enhances feedback
+- Amount Input Typing expands value field and FX preview animates upward Reacts to user focus
+- Balance Card Tap → flips slightly or expands with motion blur → shows transaction summary Elegant & interactive
+- Onboarding Steps Card slide left/right with progress bar filling smoothly Encourages completion
+- Language Selection Tap causes globe icon to rotate 360° then change locale text Adds cultural pride
+- KYC Success Avatar badge pulses from gray to green with success chime Celebration moment
+- Error Handling Shake micro-motion of input + red glow on field Mimics real-world rejection subtly
+- Modal Slide up from bottom, blur background Never bouncy — stay sleek
+- Tab Change Fade-out → fade-in with underline glide Minimalist; no slide panels
+- Navigation Push Forward: slide left → right
+  Back: right → left (reversed) Matches natural swipe direction
+- Settings Pages Accordion-style unfold Feels procedural and clean
+- Toggle to dark mode: screen fades through a soft gray → black (not hard cut)
+- Balance display in dark mode: light shimmer effect (glass-like)
+- Tap feedback: cards and buttons lightly compress
+- Swipe left/right on history card → options animate in
+- FX tip of the day card → hover bounce or reveal
+- KYC video validation screen → camera glow on detection
+- Line height 1.4–1.6 (especially for Korean text blocks)
+- Font smoothing Always enable antialiased and subpixel-antialiased
+- Number rendering Use tabular-nums for aligned digits in balance screens
+- Letter spacing Tight (-0.5% to 0%) for headers, wide (+1%) for uppercase buttons
+- Font weight usage 300 (Light), 400 (Regular), 600 (SemiBold), 700 (Bold) only

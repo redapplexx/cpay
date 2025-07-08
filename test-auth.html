@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Auth Test</title>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 200px; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Auth Test</h1>
+    
+    <div class="test-section">
+        <h3>Authentication Status</h3>
+        <div id="auth-status">Checking...</div>
+    </div>
+
+    <div class="test-section">
+        <h3>Sign Up</h3>
+        <input type="email" id="signup-email" placeholder="Email">
+        <input type="password" id="signup-password" placeholder="Password">
+        <input type="text" id="signup-name" placeholder="Full Name">
+        <br>
+        <button onclick="signUp()">Sign Up</button>
+        <div id="signup-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Sign In</h3>
+        <input type="email" id="signin-email" placeholder="Email">
+        <input type="password" id="signin-password" placeholder="Password">
+        <br>
+        <button onclick="signIn()">Sign In</button>
+        <div id="signin-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Sign Out</h3>
+        <button onclick="signOut()">Sign Out</button>
+        <div id="signout-result"></div>
+    </div>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            authDomain: "redapplex-ai-platform.firebaseapp.com",
+            projectId: "redapplex-ai-platform",
+            storageBucket: "redapplex-ai-platform.appspot.com",
+            messagingSenderId: "962411338271",
+            appId: "1:962411338271:web:559b04b35b7c8a7156d32a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        function showResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+        }
+
+        function updateAuthStatus() {
+            const statusElement = document.getElementById('auth-status');
+            if (auth.currentUser) {
+                statusElement.innerHTML = `
+                    <div class="success">
+                        ✅ Signed in as: ${auth.currentUser.email}<br>
+                        Name: ${auth.currentUser.displayName || 'Not set'}<br>
+                        UID: ${auth.currentUser.uid}
+                    </div>
+                `;
+            } else {
+                statusElement.innerHTML = '<div class="error">❌ Not signed in</div>';
+            }
+        }
+
+        async function signUp() {
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const displayName = document.getElementById('signup-name').value;
+
+            if (!email || !password || !displayName) {
+                showResult('signup-result', 'Please fill in all fields', false);
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({
+                    displayName: displayName
+                });
+                showResult('signup-result', `✅ Account created successfully! UID: ${userCredential.user.uid}`);
+                updateAuthStatus();
+            } catch (error) {
+                showResult('signup-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function signIn() {
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+
+            if (!email || !password) {
+                showResult('signin-result', 'Please fill in all fields', false);
+                return;
+            }
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                showResult('signin-result', `✅ Signed in successfully! Welcome ${userCredential.user.displayName || userCredential.user.email}`);
+                updateAuthStatus();
+            } catch (error) {
+                showResult('signin-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function signOut() {
+            try {
+                await auth.signOut();
+                showResult('signout-result', '✅ Signed out successfully');
+                updateAuthStatus();
+            } catch (error) {
+                showResult('signout-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        // Listen for auth state changes
+        auth.onAuthStateChanged((user) => {
+            updateAuthStatus();
+        });
+
+        // Initial status check
+        updateAuthStatus();
+    </script>
+</body>
+</html> 

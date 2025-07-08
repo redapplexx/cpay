@@ -1,0 +1,247 @@
+import * as functions from 'firebase-functions';
+import * as admin from 'firebase-admin';
+import OpenAI from 'openai';
+
+const db = admin.firestore();
+
+// Initialize OpenAI
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+interface ChatRequest {
+  message: string;
+  userId: string;
+  tenantId: string;
+  category?: 'financial_advice' | 'fraud_detection' | 'general';
+  context?: {
+    userBalance?: number;
+    recentTransactions?: any[];
+    kycStatus?: string;
+  };
+}
+
+interface ChatResponse {
+  response: string;
+  riskScore?: number;
+  recommendations?: string[];
+  category: string;
+}
+
+// System prompts for different categories
+const SYSTEM_PROMPTS = {
+  financial_advice: `You are a financial advisor for CPay×eMango, a cross-border remittance app. 
+  Provide helpful, safe financial advice. Always recommend consulting with licensed financial professionals for major decisions.
+  Focus on: budgeting, saving, understanding fees, safe money transfer practices, and financial literacy.`,
+  
+  fraud_detection: `You are a fraud detection assistant for CPay×eMango. 
+  Help users identify potential scams, suspicious activities, and protect their financial information.
+  Focus on: recognizing phishing attempts, verifying transaction details, protecting personal information, and reporting suspicious activities.`,
+  
+  general: `You are a helpful assistant for CPay×eMango, a cross-border remittance app. 
+  Help users with general questions about the app, transactions, account management, and basic financial concepts.`
+};
+
+export const chatAssistant = functions.https.onRequest(async (req, res) => {
+  // Enable CORS
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'GET, POST');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    res.status(204).send('');
+    return;
+  }
+
+  if (req.method !== 'POST') {
+    res.status(405).send('Method Not Allowed');
+    return;
+  }
+
+  try {
+    // Verify authentication
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(401).send('Unauthorized');
+      return;
+    }
+
+    const token = authHeader.split('Bearer ')[1];
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const { uid } = decodedToken;
+
+    const { message, category = 'general', context } = req.body as ChatRequest;
+
+    if (!message || !uid) {
+      res.status(400).send('Missing required fields');
+      return;
+    }
+
+    // Get user data for context
+    const userSnapshot = await db.collectionGroup('users').where('uid', '==', uid).get();
+    if (userSnapshot.empty) {
+      res.status(404).send('User not found');
+      return;
+    }
+
+    const userData = userSnapshot.docs[0].data();
+    const tenantId = userData.tenantId;
+
+    // Get recent transactions for context
+    const recentTransactions = await db.collection('tenants').doc(tenantId).collection('transactions')
+      .where('senderUid', '==', uid)
+      .orderBy('timestamp', 'desc')
+      .limit(5)
+      .get();
+
+    const transactionData = recentTransactions.docs.map(doc => doc.data());
+
+    // Prepare context for AI
+    const aiContext = {
+      userBalance: userData.balance,
+      recentTransactions: transactionData,
+      kycStatus: userData.kycStatus,
+      kycTier: userData.kycTier,
+      ...context
+    };
+
+    // Determine the appropriate system prompt
+    const systemPrompt = SYSTEM_PROMPTS[category] || SYSTEM_PROMPTS.general;
+
+    // Prepare the conversation
+    const conversation = [
+      { role: 'system', content: systemPrompt },
+      { 
+        role: 'user', 
+        content: `User Context: ${JSON.stringify(aiContext)}\n\nUser Question: ${message}` 
+      }
+    ];
+
+    // Call OpenAI
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: conversation as any,
+      max_tokens: 500,
+      temperature: 0.7,
+    });
+
+    const aiResponse = completion.choices[0]?.message?.content || 'I apologize, but I cannot provide a response at this time.';
+
+    // Calculate risk score based on response content
+    const riskScore = calculateRiskScore(message, aiResponse, category);
+
+    // Generate recommendations
+    const recommendations = generateRecommendations(category, riskScore, aiContext);
+
+    // Save the query to Firestore
+    const queryData = {
+      userId: uid,
+      tenantId,
+      message,
+      response: aiResponse,
+      model: 'gpt-4',
+      tokensUsed: completion.usage?.total_tokens || 0,
+      cost: calculateCost(completion.usage?.total_tokens || 0),
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      category,
+      riskScore
+    };
+
+    await db.collection('tenants').doc(tenantId).collection('ai_queries').add(queryData);
+
+    // Create AI log entry
+    const aiLogData = {
+      userId: uid,
+      tenantId,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      riskScore,
+      insight: extractInsight(aiResponse),
+      recommendation: recommendations.join('; '),
+      category: 'transaction',
+      confidence: Math.min(riskScore / 100, 1)
+    };
+
+    await db.collection('tenants').doc(tenantId).collection('ai_logs').add(aiLogData);
+
+    // Send response
+    const response: ChatResponse = {
+      response: aiResponse,
+      riskScore,
+      recommendations,
+      category
+    };
+
+    res.status(200).json(response);
+
+  } catch (error) {
+    console.error('Error in chat assistant:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+function calculateRiskScore(message: string, response: string, category: string): number {
+  let score = 0;
+  
+  // Check for suspicious keywords in user message
+  const suspiciousKeywords = ['password', 'credit card', 'ssn', 'social security', 'bank account'];
+  const messageLower = message.toLowerCase();
+  
+  suspiciousKeywords.forEach(keyword => {
+    if (messageLower.includes(keyword)) {
+      score += 20;
+    }
+  });
+
+  // Check for urgency indicators
+  const urgencyKeywords = ['urgent', 'immediately', 'now', 'quick', 'fast'];
+  urgencyKeywords.forEach(keyword => {
+    if (messageLower.includes(keyword)) {
+      score += 15;
+    }
+  });
+
+  // Category-specific scoring
+  if (category === 'fraud_detection') {
+    score += 10; // Higher baseline for fraud-related queries
+  }
+
+  return Math.min(score, 100);
+}
+
+function generateRecommendations(category: string, riskScore: number, context: any): string[] {
+  const recommendations: string[] = [];
+
+  if (riskScore > 50) {
+    recommendations.push('Consider contacting support for additional verification');
+  }
+
+  if (category === 'financial_advice') {
+    recommendations.push('Consult with a licensed financial advisor for personalized advice');
+    recommendations.push('Review transaction fees before making transfers');
+  }
+
+  if (category === 'fraud_detection') {
+    recommendations.push('Never share your password or personal information');
+    recommendations.push('Verify all transaction details before confirming');
+  }
+
+  return recommendations;
+}
+
+function extractInsight(response: string): string {
+  // Simple insight extraction - in production, you might use more sophisticated NLP
+  if (response.toLowerCase().includes('risk')) {
+    return 'Risk assessment provided';
+  } else if (response.toLowerCase().includes('fraud')) {
+    return 'Fraud prevention advice given';
+  } else if (response.toLowerCase().includes('save') || response.toLowerCase().includes('budget')) {
+    return 'Financial planning guidance offered';
+  }
+  return 'General assistance provided';
+}
+
+function calculateCost(tokens: number): number {
+  // GPT-4 pricing: $0.03 per 1K input tokens, $0.06 per 1K output tokens
+  // This is a simplified calculation
+  return (tokens / 1000) * 0.045; // Average cost per token
+} 

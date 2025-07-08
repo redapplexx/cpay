@@ -1,0 +1,246 @@
+/* Loading States & Skeleton Screens */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton-text {
+  height: 1em;
+  margin-bottom: 0.5em;
+}
+
+.skeleton-text:last-child {
+  width: 60%;
+}
+
+.skeleton-button {
+  height: 48px;
+  width: 120px;
+  border-radius: 8px;
+}
+
+.skeleton-card {
+  height: 200px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+/* Loading Spinner */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+}
+
+.spinner-primary {
+  border-top-color: var(--primary);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Pulse Animation */
+.pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}
+
+/* Fade In Animation */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.loading-content {
+  background: var(--bg-alt);
+  padding: 32px;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid #222;
+}
+
+.loading-content .spinner {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 16px;
+}
+
+/* Progress Bar */
+.progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 16px 0;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  animation: progress 2s ease-in-out infinite;
+}
+
+@keyframes progress {
+  0% { width: 0%; }
+  50% { width: 70%; }
+  100% { width: 100%; }
+}
+
+/* Shimmer Effect */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+/* Button Loading States */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* Form Loading States */
+.form-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.form-loading .spinner {
+  margin-right: 8px;
+}
+
+/* Card Loading States */
+.card-skeleton {
+  background: var(--bg-alt);
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid #222;
+}
+
+.card-skeleton .skeleton-text {
+  background: #333;
+  margin-bottom: 12px;
+}
+
+.card-skeleton .skeleton-text:first-child {
+  height: 24px;
+  width: 60%;
+}
+
+.card-skeleton .skeleton-text:nth-child(2) {
+  height: 16px;
+  width: 100%;
+}
+
+.card-skeleton .skeleton-text:nth-child(3) {
+  height: 16px;
+  width: 80%;
+}
+
+/* Table Loading States */
+.table-skeleton {
+  width: 100%;
+}
+
+.table-skeleton .skeleton-text {
+  height: 20px;
+  margin: 8px 0;
+}
+
+/* Responsive Loading States */
+@media (max-width: 768px) {
+  .loading-content {
+    margin: 20px;
+    padding: 24px;
+  }
+  
+  .skeleton-button {
+    width: 100%;
+  }
+} 

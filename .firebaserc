@@ -1,0 +1,16 @@
+{
+  "type": "service_account",
+  "project_id": "redapplex-ai-platform",
+  "private_key_id": "3f41372c2936bb7b3daa84b5546d4bd9ad4d8b45",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCF2DHtEwqg0n1P\n6mSqEScpUg+VWRjYFQlr96ES6jQWBoxQqmwsXHWLfCzV6aScgniGN40iGM7v06X4\ncDDAIvRRWIJvbLnrC8gCSU1zFWtNrPocMBomjg9GwsYjbqBl55uDf0rpNJU9W4Kr\n8mA71Jo03NMoM5xZHH/cvpINHvxugvlJi+yTsKaLHkZ0HAYbibqQsmRx/E+xSMWz\nizIvQEb59NG+/v301EzY7bb66pAQtfHxiF1IT1Dg0nvgl71FqMe1zBgurr/EGZod\nCtzJgbrjEpzQ3EdDX3h92Z6xiHJ16JVoleR7p7z7pmYBOywFTVC4oYz32555SNqG\nw6s8egZRAgMBAAECggEAAmtIZ7kG4aY8RpP9csdxlkEZ8ACWvt0OeQmWOzHJdDZ1\nFcYmw1x+cWFyrAEXjQ6coAxj/CBHqTUBlG5uqyJWmRvI67ui1pk1abkqcbCK6nH8\naUMDTfwWUZiWnTBULNNVT7iewX1GT0AWqgXs8Ffk25y8IkdghYnK09IL8LnFJTgp\nGUkr5d9nb7wAHhKqJr6aeXqQYd8TsiRfUHNf1rh9vK8+/ORSNswZDu205gMLysKB\ntmdgw73kv/4gRgQoTjjM8B5aif/74LWXzAc3hW0Wl+sEZJA1zz7fbz5tK+CuzhD5\n1ATN20p8DMb456S78vGEomxLStLS8P+LZO0yFKyIuQKBgQC6Zm6SYxgpiFbyhEGZ\nkoo1gtt0+j7hoDMpRblSiUGOO+Q5LSx/6s1zYNWkYTpMmnONOcV7i0xugFpMByKo\nHgKzocNhj0+g0hkZReeYtEWUR8wV/V3ztrEfMUvs5KvzkmcVc65R1z+MjqkUG4gt\n9+pBOCRvdR+R9kPiJB9c/oVixQKBgQC30hcnLL+KRcp+Y75HfUW2h2bL7dxt6U19\nIQ4Aepc0+e9iLzPVb6VoicJO9cUNy/8TlQ27kP7jRBNqR83XJzGNcyyOWM1DUhNp\nsFcgETaG/zWaCzs/Pkvdbync9aHi5pQ3qf0arB0ewUYBsJxHfxNm1ECpbRjROVLo\nEvr4XEveHQKBgAQBL171wg8iXrvXG5GxFEcSCKT6u18dkfvRA6pCSKZFoyGXVt1o\nrgFMk0p0zEvZBaKDGzsMQxgcqdP4U0ZJXsV9NDVkXtGVsfRZDCC7vsLwx/Gw/9O8\nmRGSfY8ZWphhDNXpJlWbykG6zucfsE1MhjvgeOfsHEGGiO7S19mnnjYBAoGBAKtZ\nsPF4mhfn1Mmaas4zLV/nueBRGxBt0SjaPjYeEIN2lDofLB9CkprvB20ZVpX02hLD\n9+gnUiJB3CNPScbMpzlm6lrK1pRxlt0HXz/qK70Ne0bcP19Fz+xbaleptT1QmUuG\nLwTE+eQoX/zFR/ixsUFCjAAjTWYDHJBu2PnY93PVAoGAF8j2XFA31Yiqe4XbHjTO\nJ7BzJ/Opx76xufe/AVdmPG/RP+/WBxyVo8qy0490ktloaqEfwjI8MnK7qMxwjXJq\no1/mI1uicQlHBOhd+d0B5uMJ7sVQrtHhurzxcSsbtgzbV2qe9nZfEvgCOunsDwoB\nH383BJF1bmCv3/kKeS6ni28=\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@redapplex-ai-platform.iam.gserviceaccount.com",
+  "client_id": "113107173380294357918",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40redapplex-ai-platform.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com",
+  "projects": {
+    "default": "redapplex-ai-platform"
+  }
+}

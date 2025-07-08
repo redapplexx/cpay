@@ -1,0 +1,64 @@
+type User @table {
+  email: String!
+  phoneNumber: String
+  passwordHash: String!
+  createdAt: Timestamp!
+  displayName: String
+  photoUrl: String
+  role: String
+}
+
+type Wallet @table {
+  user: User!
+  currency: String!
+  balance: Float!
+  createdAt: Timestamp!
+  name: String
+}
+
+type Transaction @table {
+  senderWallet: Wallet!
+  receiverWallet: Wallet!
+  amount: Float!
+  currency: String!
+  type: String!
+  status: String!
+  createdAt: Timestamp!
+  fxRate: Float
+  description: String
+  payoutBatch: PayoutBatch
+  metadata: String
+}
+
+type Merchant @table {
+  businessName: String!
+  contactUser: User!
+  createdAt: Timestamp!
+  merchantCode: String
+  businessAddress: String
+  taxId: String
+}
+
+type KYCVerification @table {
+  user: User!
+  status: String!
+  documentType: String!
+  documentNumber: String!
+  createdAt: Timestamp!
+  issueDate: Date
+  expiryDate: Date
+  verificationDate: Timestamp
+  notes: String
+}
+
+type PayoutBatch @table {
+  name: String!
+  adminUser: User!
+  totalAmount: Float!
+  currency: String!
+  numberOfRecipients: Int!
+  status: String!
+  createdAt: Timestamp!
+  description: String
+  completedAt: Timestamp
+} 

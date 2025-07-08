@@ -1,0 +1,386 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    function isAdmin() {
+      return getUserRole() == 'admin';
+    }
+    
+    function isMerchant() {
+      return getUserRole() == 'merchant';
+    }
+    
+    function isRegulator() {
+      return getUserRole() == 'regulator';
+    }
+    
+    function isCompliance() {
+      return getUserRole() == 'compliance';
+    }
+    
+    function isUser() {
+      return getUserRole() == 'user';
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isWalletOwner(walletId) {
+      return get(/databases/$(database)/documents/wallets/$(walletId)).data.userId == request.auth.uid;
+    }
+    
+    function isTransactionParticipant(transactionId) {
+      let transaction = get(/databases/$(database)/documents/transactions/$(transactionId)).data;
+      return transaction.fromUserId == request.auth.uid || transaction.toUserId == request.auth.uid;
+    }
+    
+    function isKycOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isTenantMember(tenantId) {
+      return request.auth.token.tenantId == tenantId;
+    }
+
+    function isKYCVerified() {
+      return request.auth.token.kycStatus == 'verified';
+    }
+
+    function isActiveUser() {
+      return request.auth.token.status == 'active';
+    }
+
+    function isWithinDailyLimit(amount) {
+      return amount <= request.auth.token.dailyLimit;
+    }
+
+    function isWithinMonthlyLimit(amount) {
+      return amount <= request.auth.token.monthlyLimit;
+    }
+
+    // Tenant rules
+    match /tenants/{tenantId} {
+      allow read: if isAdmin() || isTenantMember(tenantId);
+      allow write: if isAdmin();
+    }
+
+    // User profile rules with multi-tenant support
+    match /tenants/{tenantId}/users/{uid} {
+      // Admins can read/write any user document
+      // Users can read/update their own document within their tenant
+      // Users cannot change their role or tenantId
+      allow read: if isAdmin() || (isTenantMember(tenantId) && isOwner(uid));
+      allow create: if isOwner(uid) && 
+        request.resource.data.role == 'user' && 
+        request.resource.data.tenantId == tenantId;
+      allow update: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(uid) && 
+         request.resource.data.role == resource.data.role &&
+         request.resource.data.tenantId == resource.data.tenantId);
+    }
+
+    // KYC Documents
+    match /tenants/{tenantId}/kyc_documents/{docId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow create: if isTenantMember(tenantId) && 
+        isOwner(request.resource.data.userId);
+      allow update: if isAdmin();
+    }
+
+    // KYC Submissions
+    match /tenants/{tenantId}/kyc_submissions/{submissionId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow create: if isTenantMember(tenantId) && 
+        isOwner(request.resource.data.userId);
+      allow update: if isAdmin();
+    }
+
+    // KYC Logs
+    match /tenants/{tenantId}/kyc_logs/{logId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow write: if false; // Only backend functions can write
+    }
+
+    // Transactions (unified)
+    match /tenants/{tenantId}/transactions/{transactionId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && 
+         (isOwner(resource.data.senderUid) || 
+          isOwner(resource.data.recipientUid) || 
+          isOwner(resource.data.userId)));
+      allow create: if isTenantMember(tenantId) && 
+        isActiveUser() && 
+        isKYCVerified() &&
+        (isOwner(request.resource.data.senderUid) || 
+         isOwner(request.resource.data.userId));
+      allow update: if isAdmin();
+    }
+
+    // Cash Transactions
+    match /tenants/{tenantId}/cash_transactions/{transactionId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow create: if isTenantMember(tenantId) && 
+        isActiveUser() && 
+        isKYCVerified() &&
+        isOwner(request.resource.data.userId) &&
+        isWithinDailyLimit(request.resource.data.amount) &&
+        isWithinMonthlyLimit(request.resource.data.amount);
+      allow update: if isAdmin();
+    }
+
+    // P2P Transactions
+    match /tenants/{tenantId}/p2p_transactions/{transactionId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && 
+         (isOwner(resource.data.senderUid) || 
+          isOwner(resource.data.recipientUid)));
+      allow create: if isTenantMember(tenantId) && 
+        isActiveUser() && 
+        isKYCVerified() &&
+        isOwner(request.resource.data.senderUid) &&
+        isWithinDailyLimit(request.resource.data.amount) &&
+        isWithinMonthlyLimit(request.resource.data.amount);
+      allow update: if isAdmin();
+    }
+
+    // Blockchain Transactions
+    match /tenants/{tenantId}/blockchain_transactions/{txId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && 
+         isOwner(resource.data.userId));
+      allow write: if false; // Only backend functions can write
+    }
+
+    // AI Queries
+    match /tenants/{tenantId}/ai_queries/{queryId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow create: if isTenantMember(tenantId) && 
+        isActiveUser() && 
+        isOwner(request.resource.data.userId);
+      allow update: if false; // Only backend functions can update
+    }
+
+    // AI Logs
+    match /tenants/{tenantId}/ai_logs/{logId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow write: if false; // Only backend functions can write
+    }
+
+    // Notifications
+    match /tenants/{tenantId}/notifications/{notificationId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow create: if false; // Only backend functions can create
+      allow update: if isTenantMember(tenantId) && 
+        isOwner(resource.data.userId) && 
+        request.resource.data.userId == resource.data.userId;
+    }
+
+    // FX Rates
+    match /fx_rates/{date} {
+      allow read: if true; // Public read access for FX rates
+      allow write: if isAdmin();
+    }
+
+    // Admin Settings
+    match /tenants/{tenantId}/admin_settings/{settingId} {
+      allow read, write: if isAdmin() && isTenantMember(tenantId);
+    }
+
+    // Access Logs
+    match /tenants/{tenantId}/access_logs/{logId} {
+      allow read: if isAdmin() && isTenantMember(tenantId);
+      allow write: if false; // Only backend functions can write
+    }
+
+    // Device Fingerprints
+    match /tenants/{tenantId}/device_fingerprints/{fingerprintId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow create: if isTenantMember(tenantId) && 
+        isOwner(request.resource.data.userId);
+      allow update: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+    }
+
+    // Export Requests
+    match /tenants/{tenantId}/export_requests/{requestId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(resource.data.userId));
+      allow create: if isTenantMember(tenantId) && 
+        isActiveUser() && 
+        isOwner(request.resource.data.userId);
+      allow update: if isAdmin();
+    }
+
+    // User Transaction History (mirror)
+    match /tenants/{tenantId}/users/{uid}/history/{transactionId} {
+      allow read: if isAdmin() || 
+        (isTenantMember(tenantId) && isOwner(uid));
+      allow write: if false; // Only backend functions can write
+    }
+
+    // Legacy collections (for backward compatibility)
+    match /users/{uid} {
+      allow read: if isAdmin() || isOwner(uid);
+      allow update: if isAdmin() || (isOwner(uid) && request.resource.data.role == resource.data.role);
+      allow create: if isOwner(uid) && request.resource.data.role == 'user';
+    }
+
+    match /transactions/{transactionId} {
+      allow read: if isAdmin() || isOwner(resource.data.senderUid) || isOwner(resource.data.recipientUid);
+      allow create: if isOwner(request.resource.data.senderUid);
+      allow update, delete: if isAdmin();
+    }
+
+    match /adminSettings/{settingId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /ai_logs/{logId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+    
+    match /kyc_submissions/{submissionId} {
+      allow create: if isOwner(request.resource.data.userId);
+      allow read: if isAdmin() || isOwner(resource.data.userId);
+      allow update: if isAdmin();
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      // Only allow user to update their own profile, but not kycStatus, userId, or balance
+      allow update: if request.auth != null && request.auth.uid == userId
+        && !("kycStatus" in request.resource.data)
+        && !("userId" in request.resource.data)
+        && !("balance" in request.resource.data)
+        // Validate mobileNumber format
+        && (request.resource.data.mobileNumber.matches('^09\\d{9}$'));
+      // No client-side create/delete
+      allow create, delete: if false;
+
+      // Wallets sub-collection
+    match /wallets/{walletId} {
+        allow read: if request.auth != null && request.auth.uid == userId;
+        // Only allow balance update if it remains a number and >= 0
+        allow update: if request.auth != null && request.auth.uid == userId
+          && (request.resource.data.balance is number)
+          && (request.resource.data.balance >= 0);
+        // No client-side create/delete
+        allow create, delete: if false;
+      }
+    }
+    
+    // Transactions collection (defense-in-depth)
+    match /transactions/{txId} {
+      allow read: if request.auth != null && (
+        resource.data.senderId == request.auth.uid ||
+        resource.data.recipientId == request.auth.uid
+      );
+      // Deny all client-side writes
+      allow create, update, delete: if false;
+      // If ever enabled, validate amount
+      allow write: if (request.resource.data.amount is number)
+        && (request.resource.data.amount > 0);
+    }
+    
+    // Ledger collection (immutable)
+    match /ledger/{entryId} {
+      allow read: if isAuthenticated() && (isAdmin() || isWalletOwner(resource.data.walletId));
+      allow create: if isAuthenticated() && isAdmin(); // Only admin can create ledger entries
+      allow update, delete: if false; // Immutable
+    }
+    
+    // Payouts collection
+    match /payouts/{batchId} {
+      allow read: if isAuthenticated() && (isAdmin() || isMerchant());
+      allow create: if isAuthenticated() && (isAdmin() || isMerchant());
+      allow update: if isAuthenticated() && isAdmin(); // Only admin can approve/process payouts
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // KYC records collection
+    match /kyc_records/{recordId} {
+      allow read: if isAuthenticated() && (isAdmin() || isCompliance() || isRegulator() || isKycOwner(resource.data.userId));
+      allow create: if isAuthenticated() && (isAdmin() || isKycOwner(request.resource.data.userId));
+      allow update: if isAuthenticated() && (isAdmin() || isCompliance());
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // FX fees collection
+    match /fx_fees/{currency} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isAdmin(); // Only admin can configure fees
+    }
+    
+    // Audit logs collection (read-only for most users)
+    match /audit_logs/{logId} {
+      allow read: if isAuthenticated() && (isAdmin() || isRegulator() || isCompliance());
+      allow create: if isAuthenticated() && isAdmin(); // Only admin can create audit logs
+      allow update, delete: if false; // Immutable
+    }
+    
+    // AML flags collection
+    match /aml_flags/{flagId} {
+      allow read: if isAuthenticated() && (isAdmin() || isCompliance() || isRegulator());
+      allow create: if isAuthenticated() && (isAdmin() || isCompliance());
+      allow update: if isAuthenticated() && (isAdmin() || isCompliance());
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // Access control collection
+    match /access_control/{permissionId} {
+      allow read: if isAuthenticated() && isAdmin();
+      allow write: if isAuthenticated() && isAdmin(); // Only admin can manage permissions
+    }
+    
+    // Webhooks collection
+    match /webhooks/{webhookId} {
+      allow read: if isAuthenticated() && isAdmin();
+      allow create: if isAuthenticated() && isAdmin();
+      allow update: if isAuthenticated() && isAdmin();
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // Notifications collection
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && (isAdmin() || isOwner(resource.data.userId));
+      allow create: if isAuthenticated() && isAdmin(); // Only admin/system can create notifications
+      allow update: if isAuthenticated() && isAdmin();
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+    
+    // Configurations collection
+    match /configurations/{configKey} {
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && isAdmin(); // Only admin can modify configurations
+    }
+    
+    // Mass payout recipients collection
+    match /mass_payout_recipients/{recipientId} {
+      allow read: if isAuthenticated() && (isAdmin() || isMerchant());
+      allow create: if isAuthenticated() && (isAdmin() || isMerchant());
+      allow update: if isAuthenticated() && isAdmin();
+      allow delete: if isAuthenticated() && isAdmin();
+    }
+  }
+}

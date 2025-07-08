@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Functions Test</title>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-functions.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        .result { margin: 10px 0; padding: 10px; background: #f5f5f5; border-radius: 3px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🔥 Firebase Functions Test Page</h1>
+    
+    <div class="test-section">
+        <h3>Connection Test</h3>
+        <button onclick="testConnection()">Test Connection</button>
+        <div id="connection-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Transaction Test</h3>
+        <button onclick="testTransaction()">Test Transaction</button>
+        <div id="transaction-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Wallet Test</h3>
+        <button onclick="testCreateWallet()">Create Wallet</button>
+        <button onclick="testGetBalance()">Get Balance</button>
+        <div id="wallet-result"></div>
+    </div>
+
+    <script>
+        // Firebase config
+        const firebaseConfig = {
+            apiKey: "AIzaSyBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            authDomain: "redapplex-ai-platform.firebaseapp.com",
+            projectId: "redapplex-ai-platform",
+            storageBucket: "redapplex-ai-platform.appspot.com",
+            messagingSenderId: "962411338271",
+            appId: "1:962411338271:web:559b04b35b7c8a7156d32a"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const functions = firebase.functions();
+
+        function showResult(elementId, message, isSuccess = true) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = `<div class="result ${isSuccess ? 'success' : 'error'}">${message}</div>`;
+        }
+
+        async function testConnection() {
+            try {
+                const testFn = functions.httpsCallable('testConnection');
+                const result = await testFn({});
+                showResult('connection-result', `✅ Success: ${JSON.stringify(result.data)}`);
+            } catch (error) {
+                showResult('connection-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function testTransaction() {
+            try {
+                const testFn = functions.httpsCallable('testTransaction');
+                const result = await testFn({
+                    userId: 'test-user-' + Date.now(),
+                    amount: 500
+                });
+                showResult('transaction-result', `✅ Success: ${JSON.stringify(result.data)}`);
+            } catch (error) {
+                showResult('transaction-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function testCreateWallet() {
+            try {
+                const testFn = functions.httpsCallable('createWallet');
+                const result = await testFn({
+                    userId: 'test-user-' + Date.now(),
+                    currency: 'PHP',
+                    initialBalance: 1000
+                });
+                showResult('wallet-result', `✅ Wallet Created: ${JSON.stringify(result.data)}`);
+            } catch (error) {
+                showResult('wallet-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+
+        async function testGetBalance() {
+            const walletId = prompt('Enter wallet ID:');
+            if (!walletId) return;
+            
+            try {
+                const testFn = functions.httpsCallable('getWalletBalance');
+                const result = await testFn({ walletId });
+                showResult('wallet-result', `✅ Balance: ${JSON.stringify(result.data)}`);
+            } catch (error) {
+                showResult('wallet-result', `❌ Error: ${error.message}`, false);
+            }
+        }
+    </script>
+</body>
+</html> 

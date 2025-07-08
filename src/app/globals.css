@@ -1,0 +1,82 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer base {
+  :root {
+    --primary: #0083D7;
+    --primary-gradient: linear-gradient(90deg, #0083D7 0%, #00A4FF 100%);
+    --primary-foreground: #fff;
+    --background: #F6F9FC;
+    --foreground: #111827;
+    --card: #fff;
+    --card-foreground: #111827;
+    --muted: #F6F9FC;
+    --muted-foreground: #6B7280;
+    --accent: #00A4FF;
+    --accent-foreground: #fff;
+    --border: #E5E7EB;
+    --input: #E5E7EB;
+    --ring: #0083D7;
+    --radius: 0.75rem;
+    --font-sans: 'Inter', ui-sans-serif, system-ui;
+    --font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular;
+    --chart-1: 158 80% 42%; /* Emerald Green */
+    --chart-2: 214 89% 52%; /* Sky Blue */
+    --chart-3: 197 37% 24%;
+    --chart-4: 51 100% 50%; /* Royal Gold */
+    --chart-5: 27 87% 67%;
+  }
+  .dark {
+    --background: 210 69% 11%;
+    --foreground: 0 0% 98%;
+    --card: 210 69% 13%;
+    --card-foreground: 0 0% 98%;
+    --popover: 210 69% 11%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 210 69% 11%;
+    --secondary: 210 69% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 210 69% 15%;
+    --muted-foreground: 210 69% 65%;
+    --accent: 51 100% 50%;
+    --accent-foreground: 210 69% 11%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 69% 15%;
+    --input: 210 69% 15%;
+    --ring: 51 100% 50%;
+    --chart-1: 158 70% 50%;
+    --chart-2: 214 70% 60%;
+    --chart-3: 51 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Notched button right edge */
+.after\:clip-path-hex-notch::after {
+  clip-path: polygon(0 0, 100% 4px, 100% calc(100% - 4px), 0 100%);
+}
+
+/* Card upper-left cut-in */
+.cut-in-upper-left {
+  clip-path: polygon(0 12px, 12px 0, 100% 0, 100% 100%, 0 100%);
+}
