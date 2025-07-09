@@ -1,123 +1,265 @@
+
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth';
-import { auth, isFirebaseConfigured } from '@/lib/firebase';
-import { useToast } from '@/hooks/use-toast';
-
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import {
-  ShieldCheck,
-  ChevronRight,
-  Bell,
-  Languages,
-  Lock,
-  FileText,
-  HelpCircle,
-} from 'lucide-react';
-import { useAuth } from '@/components/auth/AuthProvider';
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Badge } from '@/components/ui/badge';
+import { KycPromptCard } from '@/components/dashboard/kyc-prompt-card';
+import { KycPendingCard } from '@/components/dashboard/kyc-pending-card';
+import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth';
+import { updateProfile } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const menuItems = [
-  { icon: Bell, label: 'Notifications', href: '/dashboard/notifications' },
-  { icon: Languages, label: 'Language', href: '#' },
-  { icon: Lock, label: 'Security', href: '#' },
-  { icon: FileText, label: 'Compliance', href: '#' },
-  { icon: HelpCircle, label: 'Help & Support', href: '#' },
-];
+const profileSchema = z.object({
+  name: z.string().min(2, 'Full name must be at least 2 characters.'),
+});
+
+type ProfileFormData = z.infer<typeof profileSchema>;
+
+type KycStatus = 'Verified' | 'Pending' | 'Unverified';
+
+const KycStatusBadge = ({ status }: { status: KycStatus }) => {
+  const statusMap = {
+    Verified: {
+      label: 'Verified',
+      icon: CheckCircle,
+      className: 'bg-green-600 hover:bg-green-600/90 text-primary-foreground',
+    },
+    Pending: {
+      label: 'Pending',
+      icon: Clock,
+      className: 'bg-amber-500 hover:bg-amber-500/90 text-primary-foreground',
+    },
+    Unverified: {
+      label: 'Unverified',
+      icon: AlertCircle,
+      className: 'bg-destructive hover:bg-destructive/90 text-destructive-foreground',
+    },
+  };
+  const currentStatus = statusMap[status];
+  return (
+    <Badge className={cn(currentStatus.className, 'border-transparent')}>
+      <currentStatus.icon className="mr-1.5 h-3.5 w-3.5" />
+      {currentStatus.label}
+    </Badge>
+  );
+};
+
+const ProfileSkeleton = () => (
+    <Card>
+        <CardHeader>
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-64" />
+        </CardHeader>
+        <CardContent className="space-y-8">
+            <div className="flex items-center gap-6">
+              <Skeleton className="h-24 w-24 rounded-full" />
+              <div className="grid gap-2 w-full">
+                  <Skeleton className="h-8 w-1/2" />
+                  <Skeleton className="h-5 w-1/3" />
+                  <Skeleton className="h-6 w-1/4 mt-1" />
+              </div>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+                <div className="space-y-2">
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+            </div>
+            <div className="space-y-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-10 w-full" />
+            </div>
+        </CardContent>
+        <CardFooter>
+            <Skeleton className="h-10 w-36" />
+        </CardFooter>
+    </Card>
+)
+
 
 export default function ProfilePage() {
-  const router = useRouter();
   const { toast } = useToast();
-  const { user } = useAuth();
+  const [isSaving, setIsSaving] = useState(false);
+  const { user, userAccount, isLoading } = useAuth();
 
-  const handleLogout = async () => {
-    if (!isFirebaseConfigured || !auth) {
-      toast({
-        variant: 'destructive',
-        title: 'Firebase Not Configured',
-        description: 'Cannot log out because Firebase is not set up.',
-      });
-      return;
+  const form = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    values: {
+      name: user?.displayName || '',
+    },
+  });
+  
+  useEffect(() => {
+    if (user) {
+        form.reset({ name: user.displayName || '' });
     }
+  }, [user, form]);
+
+  const onSubmit = async (values: ProfileFormData) => {
+    if (!auth.currentUser) {
+        toast({ variant: 'destructive', title: 'Not Authenticated' });
+        return;
+    }
+    setIsSaving(true);
+    
     try {
-      await signOut(auth);
-      toast({
-        title: 'Logged Out',
-        description: 'You have been successfully logged out.',
-      });
-      router.push('/login');
+        await updateProfile(auth.currentUser, { displayName: values.name });
+        // Also update in Firestore
+        const userRef = doc(db, 'users', auth.currentUser.uid);
+        await setDoc(userRef, { profile: { fullName: values.name } }, { merge: true });
+
+        toast({
+            title: 'Profile Updated',
+            description: 'Your account information has been successfully saved.',
+        });
+        form.reset(values); // Reset form with new values to clear dirty state
     } catch (error) {
-      console.error('Logout Error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Logout Failed',
-        description: 'An error occurred while logging out. Please try again.',
-      });
+        console.error("Profile update error:", error);
+        toast({ variant: 'destructive', title: 'Update Failed' });
+    } finally {
+        setIsSaving(false);
     }
   };
 
-  return (
-    <div className="flex flex-col gap-6 p-4 sm:p-6">
-      <header className="flex items-center gap-4 pt-4">
-        <Avatar className="h-20 w-20 border-4 border-primary/10">
-          <AvatarImage src="https://placehold.co/100x100" alt="User" />
-          <AvatarFallback>{user?.email?.charAt(0).toUpperCase()}</AvatarFallback>
-        </Avatar>
-        <div>
-          <h1 className="text-2xl font-bold font-headline text-primary">
-            {user?.displayName || 'New User'}
-          </h1>
-          <p className="text-muted-foreground">{user?.email}</p>
-        </div>
-      </header>
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+  }
 
-      <Card className="shadow-elegant rounded-3xl">
-        <CardHeader>
-          <CardTitle>KYC Status</CardTitle>
-          <CardDescription>
-            Your verification level determines your transaction limits.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="h-6 w-6 text-emerald-green" />
-            <Badge className="bg-emerald-green/20 text-emerald-green hover:bg-emerald-green/30">
-              Verified
-            </Badge>
+  const renderContent = () => {
+    if (isLoading || !user || !userAccount) {
+        return <ProfileSkeleton />
+    }
+    
+    const { kycStatus, fullName, address } = userAccount.profile;
+  
+    if (kycStatus !== 'Verified') {
+      return (
+          <div className="space-y-4">
+              <Card>
+                  <CardHeader>
+                      <CardTitle>My Profile</CardTitle>
+                      <CardDescription>Your personal account details.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                      <div className="flex items-center gap-4">
+                          <Avatar className="h-16 w-16 border">
+                              <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
+                              <AvatarFallback>{getInitials(user.displayName || '')}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                               <h2 className="text-xl font-bold font-headline">{user.displayName}</h2>
+                               <div className="flex items-center gap-2 pt-2">
+                                  <span className="text-sm font-medium">KYC Status:</span>
+                                  <KycStatusBadge status={kycStatus} />
+                              </div>
+                          </div>
+                      </div>
+                  </CardContent>
+              </Card>
+              {kycStatus === 'Unverified' && <KycPromptCard />}
+              {kycStatus === 'Pending' && <KycPendingCard />}
           </div>
-          <Button variant="outline" className="rounded-xl">
-            Increase Limits
-          </Button>
-        </CardContent>
+      );
+    }
+  
+  
+    return (
+      <Card>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CardHeader>
+              <CardTitle>My Profile</CardTitle>
+              <CardDescription>
+                View and manage your personal details.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-8">
+                <div className="flex items-center gap-6">
+                  <Avatar className="h-24 w-24 border">
+                    <AvatarImage src={user.photoURL || ''} alt={user.displayName || ''} />
+                    <AvatarFallback>{getInitials(user.displayName || '')}</AvatarFallback>
+                  </Avatar>
+                  <div className="grid gap-1.5">
+                      <h2 className="text-2xl font-bold font-headline">{form.watch('name')}</h2>
+                      <p className="text-sm text-muted-foreground">{user.phoneNumber || 'No phone number'}</p>
+                       <div className="flex items-center gap-2 pt-1">
+                          <span className="text-sm font-medium">KYC Status:</span>
+                          <KycStatusBadge status={kycStatus} />
+                      </div>
+                  </div>
+                </div>
+  
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your full name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormItem>
+                  <FormLabel>Email Address</FormLabel>
+                  <FormControl>
+                    <Input value={user.email || 'No email associated'} readOnly disabled />
+                  </FormControl>
+                   <FormDescription>
+                      Email cannot be changed for anonymous accounts.
+                  </FormDescription>
+                </FormItem>
+              </div>
+  
+              <FormItem>
+                <FormLabel>Registered Address</FormLabel>
+                <FormControl>
+                  <Input value={address || 'No address on file. Complete KYC.'} readOnly disabled />
+                </FormControl>
+                <FormDescription>
+                  Your address is linked to your KYC verification and cannot be changed here.
+                </FormDescription>
+              </FormItem>
+            </CardContent>
+              <CardFooter>
+                <Button type="submit" disabled={isSaving || !form.formState.isDirty}>
+                  {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isSaving ? 'Saving Changes...' : 'Save Changes'}
+                </Button>
+            </CardFooter>
+          </form>
+        </Form>
       </Card>
+    );
+  }
 
-      <Card className="shadow-elegant rounded-3xl">
-        <CardContent className="p-2">
-          <ul className="space-y-1">
-            {menuItems.map((item, index) => (
-              <li key={item.label}>
-                <a
-                  href={item.href}
-                  className="flex items-center gap-4 p-4 rounded-xl hover:bg-accent transition-colors"
-                >
-                  <item.icon className="h-5 w-5 text-muted-foreground" />
-                  <span className="flex-1 font-semibold">{item.label}</span>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                </a>
-                {index < menuItems.length - 1 && <Separator />}
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
-
-      <Button variant="destructive" className="w-full rounded-xl" onClick={handleLogout}>
-        Log Out
-      </Button>
-    </div>
-  );
+  return <div className="max-w-3xl mx-auto">{renderContent()}</div>;
 }

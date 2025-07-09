@@ -1,0 +1,13 @@
+[
+  {
+    "localId": "admin_user_id",
+    "email": "winny@cpay.com",
+    "passwordHash": "superwinny",
+    "passwordSalt": "",
+    "displayName": "CPay Admin",
+    "photoUrl": "",
+    "emailVerified": true,
+    "disabled": false,
+    "customAttributes": "{\"role\":\"ADMIN\"}"
+  }
+] 

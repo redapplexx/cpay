@@ -1,0 +1,17 @@
+{
+  "name": "core-functions",
+  "version": "1.0.0",
+  "description": "Core CPay functions",
+  "main": "src/index.ts",
+  "engines": {
+    "node": "20"
+  },
+  "dependencies": {
+    "firebase-functions": "^4.0.0",
+    "firebase-admin": "^11.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+} 

@@ -1,0 +1,48 @@
+# Firebase Data Connect Schema for 'users' collection
+
+# This schema defines the structure and access control for the 'users' collection
+# using Firebase Data Connect.
+
+# To apply this schema:
+# 1. Enable Firebase Data Connect in your Firebase project.
+# 2. Import this schema using the Firebase CLI or the Firebase console.
+
+# Schema definition (Example - Adapt to your specific needs)
+SCHEMA users {
+  # Unique User ID (matches Firebase Auth UID)
+  id: string @id @required;
+
+  email: string @required;
+  displayName: string;
+
+  # User Profile Information
+  profile: Profile @required;
+
+  # User Custom Claims
+  customClaims: CustomClaims;
+
+  # Timestamps
+  createdAt: timestamp;
+
+  # Indexes (Examples - Customize based on common queries)
+  @@index(email);
+  @@index(profile.kycStatus);
+  @@index(customClaims.role);
+}
+
+type Profile {
+  kycStatus: string; # e.g., 'Verified', 'Pending', 'Unverified'
+  isMerchant: boolean;
+  # Add other profile fields as needed
+}
+
+type CustomClaims {
+  role: string; # e.g., 'ADMIN', 'PARTNER_ADMIN', 'USER'
+  partnerId: string; # If applicable
+}
+
+# Access Control Rules (Example - Adapt based on your specific needs)
+# These are high-level examples and may need further refinement.
+
+# Only admins can read/write all user data
+# Access to specific user data may be granted to the user themselves (e.g., for profile updates, governed by different rules)

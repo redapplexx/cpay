@@ -3,19 +3,26 @@
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
   },
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs20"
+  },
   "hosting": {
-    "source": ".",
+    "public": "app",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-    "frameworksBackend": {
-      "region": "asia-east1"
-    }
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
   },
-  "functions": {
-    "source": "functions"
+  "storage": {
+    "rules": "storage.rules"
   },
   "emulators": {
     "auth": {
@@ -27,12 +34,34 @@
     "firestore": {
       "port": 8080
     },
+    "hosting": {
+      "port": 5000
+    },
     "storage": {
       "port": 9199
     },
+    "pubsub": {
+      "port": 8085
+    },
     "ui": {
-      "enabled": true,
-      "port": 4000
+      "enabled": true
+    },
+    "apphosting": {
+      "port": 5002,
+      "rootDirectory": "app/"
+    },
+    "database": {
+      "port": 9000
+    },
+    "eventarc": {
+      "port": 9299
+    },
+    "dataconnect": {
+      "port": 9399,
+      "dataDir": "dataconnect/.dataconnect/pgliteData"
+    },
+    "tasks": {
+      "port": 9299
     },
     "singleProjectMode": true
   }

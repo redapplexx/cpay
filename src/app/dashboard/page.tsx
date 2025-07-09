@@ -1,183 +1,138 @@
+// src/app/dashboard/page.tsx
 'use client';
 
-import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { WalletManagement } from '@/components/dashboard/WalletManagement';
-import { TransactionManagement } from '@/components/dashboard/TransactionManagement';
-import { KYCManagement } from '@/components/dashboard/KYCManagement';
-import { FirebaseFunctionsExample } from '@/components/examples/FirebaseFunctionsExample';
-import { useTestConnection, useTestTransaction } from '@/hooks/useFirebaseFunctions';
-import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import dynamic from 'next/dynamic';
+import { useAuth } from '@/hooks/use-auth';
+import { BalanceCard } from '@/components/dashboard/balance-card';
+import { ActionButtons } from '@/components/dashboard/action-buttons';
+import { Skeleton } from '@/components/ui/skeleton';
+import { AlertCircle, Clock, DollarSign, TrendingUp, Users } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { AuthGuard } from '@/components/auth/AuthGuard';
-import { useAuth } from '@/components/auth/AuthProvider';
-import { Logo } from '@/components/shared/Logo';
+import { Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
+import { AnimatedPageWrapper } from '@/components/ui/AnimatedPageWrapper'; // Ensure this path is correct
+
+// Dynamic imports with premium skeleton loaders
+const SpendingChart = dynamic(() => import('@/components/dashboard/spending-chart').then(mod => mod.SpendingChart), {
+  loading: () => <Skeleton className="h-[300px] w-full bg-gray-700 rounded-lg" />,
+  ssr: false,
+});
+
+const RecentTransactions = dynamic(() => import('@/components/dashboard/recent-transactions').then(mod => mod.RecentTransactions), {
+  loading: () => <Skeleton className="h-[300px] w-full bg-gray-700 rounded-lg" />,
+});
+
+const FinancialAdvisorCard = dynamic(() => import('@/components/dashboard/financial-advisor-card').then(mod => mod.FinancialAdvisorCard), {
+  loading: () => <Skeleton className="h-[200px] w-full lg:col-span-2 bg-gray-700 rounded-lg" />,
+});
+
+// Placeholder for fetching main app dashboard stats
+// In a real scenario, you'd have a backend function like getDashboardOverviewStats
+interface MainDashboardStats {
+  totalBalancePHP: number;
+  totalTransactionsCount: number;
+  pendingTransactionsCount: number;
+  // Add more stats as needed
+  lastUpdateTimestamp: { toDate: () => Date };
+}
+
+// Mock function for demonstration. Replace with actual backend call.
+const getDashboardOverviewStats = async (): Promise<MainDashboardStats> => {
+  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+  return {
+    totalBalancePHP: 50123.45,
+    totalTransactionsCount: 128,
+    pendingTransactionsCount: 3,
+    lastUpdateTimestamp: { toDate: () => new Date() },
+  };
+};
 
 export default function DashboardPage() {
+  const { user, isLoading: isAuthLoading } = useAuth();
   const { toast } = useToast();
-  const { user, logout } = useAuth();
-  const testConnection = useTestConnection();
-  const testTransaction = useTestTransaction();
 
-  const handleTestConnection = async () => {
-    const result = await testConnection.execute({});
-    if (result) {
-      toast({
-        title: 'Connection Test Successful',
-        description: result.message,
-      });
-    }
-  };
+  // Fetch general dashboard overview stats
+  const { data: stats, isLoading: isLoadingStats, error: statsError } = useQuery<MainDashboardStats>({
+    queryKey: ['mainDashboardOverview'],
+    queryFn: getDashboardOverviewStats,
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
 
-  const handleTestTransaction = async () => {
-    const result = await testTransaction.execute({
-      userId: 'test-user-' + Date.now(),
-      amount: 500,
+  if (isAuthLoading || isLoadingStats) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-950 text-white">
+        <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        <p className="ml-4 text-lg text-gray-400">Loading your dashboard...</p>
+      </div>
+    );
+  }
+
+  if (statsError) {
+    toast({
+      title: "Dashboard Load Error",
+      description: `Failed to load overview data: ${(statsError as Error).message}`,
+      variant: "destructive"
     });
-    if (result) {
-      toast({
-        title: 'Transaction Test Successful',
-        description: `${result.message} - Amount: ₱${result.amount}`,
-      });
-    }
-  };
-
-  const handleLogout = async () => {
-    await logout();
-  };
+  }
 
   return (
-    <AuthGuard requireAuth={true}>
-      <div className="container mx-auto p-6 space-y-6">
-        {/* Header with User Info */}
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <Logo size="lg" />
-            <div>
-              <h1 className="text-3xl font-bold mb-2">CPay Fintech Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user?.displayName || user?.email}</p>
-            </div>
-          </div>
-          <Button onClick={handleLogout} variant="outline">
-            Sign Out
-          </Button>
+    <AnimatedPageWrapper>
+      <div className="space-y-6 lg:space-y-8 p-4 lg:p-6">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user?.displayName || 'User'}!</h1>
+          <p className="text-gray-400 text-lg">Here's a summary of your account.</p>
         </div>
 
-        {/* Connection Test */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Firebase Connection Test</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex gap-4">
-              <Button 
-                onClick={handleTestConnection} 
-                disabled={testConnection.loading}
-              >
-                {testConnection.loading ? (
-                  <LoadingSpinner size="sm" text="Testing..." />
-                ) : (
-                  'Test Connection'
-                )}
-              </Button>
-              <Button 
-                onClick={handleTestTransaction} 
-                disabled={testTransaction.loading}
-                variant="outline"
-              >
-                {testTransaction.loading ? (
-                  <LoadingSpinner size="sm" text="Testing..." />
-                ) : (
-                  'Test Transaction'
-                )}
-              </Button>
-            </div>
-            {testConnection.error && (
-              <p className="text-red-600 text-sm">{testConnection.error.message}</p>
-            )}
-            {testTransaction.error && (
-              <p className="text-red-600 text-sm">{testTransaction.error.message}</p>
-            )}
-          </CardContent>
-        </Card>
+        <BalanceCard /> {/* This card will handle its own loading states and multi-currency */}
 
-        {/* Firebase Functions Console */}
-        <FirebaseFunctionsExample />
-
-        {/* Main Components Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <WalletManagement />
-          <TransactionManagement />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <KYCManagement />
-          
-          {/* Status Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>System Status</CardTitle>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="bg-gray-800 border border-gray-700 text-white shadow-lg relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent rounded-lg opacity-20"></div>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10">
+              <CardTitle className="text-sm font-medium text-gray-300">Available Balance</CardTitle>
+              <DollarSign className="h-5 w-5 text-primary" />
             </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Firebase Functions: Online</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Firestore Database: Online</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Firebase Storage: Online</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span>Authentication: Online</span>
-                </div>
-              </div>
+            <CardContent className="z-10">
+              <div className="text-3xl font-bold text-primary-foreground">₱{stats?.totalBalancePHP.toLocaleString('en-PH', { minimumFractionDigits: 2 }) || '0.00'}</div>
+              <p className="text-xs text-gray-400 mt-1">PHP Wallet</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-800 border border-gray-700 text-white shadow-lg relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent rounded-lg opacity-20"></div>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10">
+              <CardTitle className="text-sm font-medium text-gray-300">Total Transactions</CardTitle>
+              <TrendingUp className="h-5 w-5 text-accent" />
+            </CardHeader>
+            <CardContent className="z-10">
+              <div className="text-3xl font-bold text-primary-foreground">{stats?.totalTransactionsCount.toLocaleString() || '0'}</div>
+              <p className="text-xs text-gray-400 mt-1">all types, all time</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gray-800 border border-gray-700 text-white shadow-lg relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-lg opacity-20"></div>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10">
+              <CardTitle className="text-sm font-medium text-gray-300">Pending Actions</CardTitle>
+              <Clock className="h-5 w-5 text-blue-500" />
+            </CardHeader>
+            <CardContent className="z-10">
+              <div className="text-3xl font-bold text-primary-foreground">{stats?.pendingTransactionsCount.toLocaleString() || '0'}</div>
+              <p className="text-xs text-gray-400 mt-1">awaiting confirmation</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Instructions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>How to Test</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4 text-sm">
-              <div>
-                <h4 className="font-semibold mb-2">1. Test Connection</h4>
-                <p>Click "Test Connection" to verify Firebase Functions are working.</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">2. Use Functions Console</h4>
-                <p>Use the Firebase Functions Console above to test any function with custom data.</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">3. Create Wallet</h4>
-                <p>Create a new wallet to test wallet management functions.</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">4. Process Transactions</h4>
-                <p>Use the wallet IDs to test transaction processing.</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">5. Upload KYC Documents</h4>
-                <p>Test document upload and KYC processing.</p>
-              </div>
-              <div>
-                <h4 className="font-semibold mb-2">6. Monitor Logs</h4>
-                <p>Check Firebase Console → Functions → Logs for detailed execution logs.</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <ActionButtons />
+
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <SpendingChart />
+          <RecentTransactions />
+        </div>
+
+        <FinancialAdvisorCard />
       </div>
-    </AuthGuard>
+    </AnimatedPageWrapper>
   );
 }
