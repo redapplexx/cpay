@@ -1,6 +1,7 @@
 {
   "projects": {
     "default": "cpay-f149i"
+<<<<<<< HEAD
   },
   "targets": {
     "cpay-f149i": {
@@ -12,4 +13,7 @@
     }
   },
   "etags": {}
+=======
+  }
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 }

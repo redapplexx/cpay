@@ -13,7 +13,10 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
+<<<<<<< HEAD
 import { PasswordExpirationPrompt } from '@/components/auth/PasswordExpirationPrompt';
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 
 export default function SettingsPage() {
   return (
@@ -25,8 +28,11 @@ export default function SettingsPage() {
         </p>
       </div>
 
+<<<<<<< HEAD
       <PasswordExpirationPrompt />
 
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
       <Card>
         <CardHeader>
           <CardTitle>Appearance</CardTitle>
@@ -84,7 +90,11 @@ export default function SettingsPage() {
       
       <Card>
         <CardHeader>
+<<<<<<< HEAD
           <CardTitle>Security &amp; Privacy</CardTitle>
+=======
+          <CardTitle>Security & Privacy</CardTitle>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
           <CardDescription>
             Manage your password, devices, and view legal documents.
           </CardDescription>

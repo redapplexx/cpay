@@ -26,12 +26,15 @@ const KycDocumentAnalyzerInputSchema = z.object({
       fullName: z.string(),
       dob: z.string(),
       address: z.string(),
+<<<<<<< HEAD
       permanentAddress: z.string(),
       sourceOfFunds: z.string(),
       nationality: z.string(),
       tin: z.string().optional(),
       sss: z.string().optional(),
       passport: z.string().optional(),
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
   }).describe('The information entered by the user.'),
 });
 export type KycDocumentAnalyzerInput = z.infer<typeof KycDocumentAnalyzerInputSchema>;
@@ -66,6 +69,7 @@ Entered Information:
 - Full Name: {{{enteredInformation.fullName}}}
 - Date of Birth: {{{enteredInformation.dob}}}
 - Address: {{{enteredInformation.address}}}
+<<<<<<< HEAD
 - Permanent Address: {{{enteredInformation.permanentAddress}}}
 - Source of Funds: {{{enteredInformation.sourceOfFunds}}}
 - Nationality: {{{enteredInformation.nationality}}}
@@ -73,6 +77,8 @@ Entered Information:
 - SSS: {{{enteredInformation.sss}}}
 - Passport: {{{enteredInformation.passport}}}
 
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 
 Instructions:
 1.  Extract all relevant information from the KYC document, including name, address, and date of birth.

@@ -13,7 +13,10 @@ import { useToast } from '@/hooks/use-toast';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { Loader2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
+<<<<<<< HEAD
 import { firebaseApp } from '@/lib/firebase';
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 
 // Define types for Cloud Function interaction
 interface SignInPayload {
@@ -28,7 +31,11 @@ interface SignInResponse {
 }
 
 // Get a reference to the Cloud Function
+<<<<<<< HEAD
 const functions = getFunctions(firebaseApp);
+=======
+const functions = getFunctions();
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 const signInFn = httpsCallable<SignInPayload, SignInResponse>('signInWithUsernameAndPassword');
 
 export default function LoginPage() {
@@ -67,6 +74,7 @@ export default function LoginPage() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="flex min-h-screen items-center justify-center bg-gray-950 text-white p-4 font-sans">
       <Card className="w-full max-w-md bg-gray-900 border border-gray-700 shadow-xl rounded-lg overflow-hidden relative">
         {/* Subtle background gradient for premium feel */}
@@ -94,6 +102,30 @@ export default function LoginPage() {
             {useUsername ? (
               <div className="space-y-2">
                 <Label htmlFor="username" className="text-gray-300 text-sm">Username</Label>
+=======
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-4">
+      <Card className="w-full max-w-sm">
+        <CardHeader>
+          <CardTitle className="text-2xl">Login to CPay</CardTitle>
+          <CardDescription>
+            Enter your credentials to access your wallet.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center space-x-2 mb-4">
+            <Label htmlFor="login-method">Use Mobile</Label>
+            <Switch
+              id="login-method"
+              checked={useUsername}
+              onCheckedChange={setUseUsername}
+            />
+            <Label htmlFor="login-method">Use Username</Label>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {useUsername ? (
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
                 <Input
                   id="username"
                   type="text"
@@ -101,12 +133,19 @@ export default function LoginPage() {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   required
+<<<<<<< HEAD
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
                 />
               </div>
             ) : (
               <div className="space-y-2">
+<<<<<<< HEAD
                 <Label htmlFor="mobileNumber" className="text-gray-300 text-sm">Mobile Number</Label>
+=======
+                <Label htmlFor="mobileNumber">Mobile Number</Label>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
                 <Input
                   id="mobileNumber"
                   type="tel"
@@ -114,11 +153,15 @@ export default function LoginPage() {
                   value={mobileNumber}
                   onChange={(e) => setMobileNumber(e.target.value)}
                   required
+<<<<<<< HEAD
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-500 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200"
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
                 />
               </div>
             )}
             <div className="space-y-2">
+<<<<<<< HEAD
               <Label htmlFor="password" className="text-gray-300 text-sm">Password</Label>
               <Input
                 id="password"
@@ -131,14 +174,32 @@ export default function LoginPage() {
               />
             </div>
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-2.5 rounded-md transition-all duration-200" disabled={isLoading}>
+=======
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Login
             </Button>
           </form>
         </CardContent>
+<<<<<<< HEAD
         <CardFooter className="flex justify-center text-sm text-gray-500 border-t border-gray-800 pt-4 relative z-10">
           <p>Don't have an account?&nbsp;</p>
           <Link href="/auth/register" className="font-semibold text-primary hover:underline">
+=======
+        <CardFooter className="flex justify-center text-sm">
+          <p>Don't have an account?&nbsp;</p>
+          <Link href="/auth/register" className="font-semibold text-blue-600 hover:underline">
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
             Register here
           </Link>
         </CardFooter>

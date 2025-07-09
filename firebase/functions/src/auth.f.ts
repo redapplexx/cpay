@@ -1,10 +1,14 @@
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+<<<<<<< HEAD
 import { z } from 'zod';
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 
 // Assuming Firebase Admin SDK is already initialized elsewhere
 // admin.initializeApp();
 
+<<<<<<< HEAD
 // Helper function to check if a date is more than 90 days ago
 const isMoreThan90DaysAgo = (date: admin.firestore.Timestamp): boolean => {
     const ninetyDaysInMillis = 90 * 24 * 60 * 60 * 1000;
@@ -73,6 +77,8 @@ export const changePassword = functions.https.onCall(async (data, context) => {
 
 
 // Existing login functions...
+=======
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 export const signInWithUsernameAndPassword = functions.https.onCall(async (data, context) => {
     const identifier = data.identifier; // Can be mobile number or username
     const password = data.password;
@@ -145,6 +151,21 @@ export const signInWithUsernameAndPassword = functions.https.onCall(async (data,
         // Admin SDK to *verify* the password after finding the user by username,
         // or to use Custom Tokens for signing in.
 
+<<<<<<< HEAD
+=======
+        // Option 1 (Conceptual - requires exposing email or using custom claims):
+        // If you stored the user's email alongside the username in Firestore,
+        // you could fetch the email and use `admin.auth().getUserByEmail(email)`
+        // and then compare passwords (less secure unless hashed on client before sending)
+        // OR use a custom token approach.
+
+        // Option 2: Using Custom Tokens (More Secure)
+        // You would verify the username and password combination against your database
+        // within this Cloud Function. If they match, you generate a custom token
+        // for that user's UID and send it back to the client. The client then uses
+        // `firebase.auth().signInWithCustomToken(token)` to sign in.
+
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
         // This implementation will follow Option 2 (Custom Tokens) as it's more standard
         // for username-based authentication with Firebase Admin SDK.
 
@@ -196,6 +217,48 @@ export const signInWithUsernameAndPassword = functions.https.onCall(async (data,
     }
 });
 
+<<<<<<< HEAD
+=======
+// --- Phase 2: Password Expiration ---
+
+// Helper function to check if a date is more than 90 days ago
+const isMoreThan90DaysAgo = (date: admin.firestore.Timestamp): boolean => {
+    const ninetyDaysInMillis = 90 * 24 * 60 * 60 * 1000;
+    const nowInMillis = Date.now();
+    const dateInMillis = date.toMillis();
+    return (nowInMillis - dateInMillis) > ninetyDaysInMillis;
+};
+
+// HTTP-callable function to check if the user's password has expired (more than 90 days old)
+export const checkPasswordExpiration = functions.https.onCall(async (data, context) => {
+    // Ensure the user is authenticated
+    const uid = context.auth?.uid;
+    if (!uid) {
+        throw new functions.https.HttpsError(
+            'unauthenticated',
+            'User must be authenticated to check password expiration.'
+        );
+    }
+
+    try {
+        // Fetch the user's passwordLastChanged timestamp from Firestore
+        const userDoc = await admin.firestore().collection('users').doc(uid).get();
+        const userData = userDoc.data();
+
+        const passwordLastChanged = userData?.passwordLastChanged as admin.firestore.Timestamp | undefined;
+
+        // If the timestamp exists, check if it's more than 90 days ago
+        const hasExpired = passwordLastChanged ? isMoreThan90DaysAgo(passwordLastChanged) : true; // Assume expired if timestamp is missing (e.g., old user)
+
+        return { hasExpired: hasExpired };
+
+    } catch (error: any) {
+        console.error('Error checking password expiration:', error);
+        throw new functions.https.HttpsError('internal', 'Failed to check password expiration.', error.message);
+    }
+});
+
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 
 export const signInWithEmailAndPassword = functions.https.onCall(async (data, context) => {
     const email = data.email;
@@ -372,4 +435,8 @@ export const signInWithPin = functions.https.onCall(async (data, context) => {
             );
         }
     }
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3

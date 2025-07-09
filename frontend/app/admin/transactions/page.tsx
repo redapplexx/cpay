@@ -4,6 +4,10 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+<<<<<<< HEAD
+=======
+import { AdminLayout } from '@/components/admin/AdminLayout';
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 import { Loader2 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -43,7 +47,11 @@ export default function AdminTransactionsPage() {
   };
 
   return (
+<<<<<<< HEAD
     <div className="container mx-auto p-4">
+=======
+    <AdminLayout>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
       <h1 className="text-2xl font-bold mb-4">Transaction Management</h1>
       
       <div className="flex items-center space-x-2 mb-4 p-4 bg-slate-50 rounded-lg">
@@ -97,6 +105,10 @@ export default function AdminTransactionsPage() {
           </table>
         </div>
       )}
+<<<<<<< HEAD
     </div>
+=======
+    </AdminLayout>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
   );
 }

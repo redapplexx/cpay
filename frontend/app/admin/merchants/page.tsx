@@ -4,6 +4,10 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+<<<<<<< HEAD
+=======
+import { AdminLayout } from '@/components/admin/AdminLayout';
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -75,16 +79,30 @@ export default function AdminMerchantsPage() {
 
   if (isLoading) {
     return (
+<<<<<<< HEAD
       <div className="flex justify-center items-center h-64"><Loader2 className="h-16 w-16 animate-spin" /></div>
+=======
+      <AdminLayout>
+        <div className="flex justify-center items-center h-64"><Loader2 className="h-16 w-16 animate-spin" /></div>
+      </AdminLayout>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
     );
   }
 
   if (error) {
+<<<<<<< HEAD
     return <div>Error loading merchants: {(error as Error).message}</div>;
   }
 
   return (
     <div>
+=======
+    return <AdminLayout><div>Error loading merchants: {(error as Error).message}</div></AdminLayout>;
+  }
+
+  return (
+    <AdminLayout>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
       <h1 className="text-2xl font-bold mb-4">Merchant Management</h1>
       <div className="bg-white shadow overflow-hidden rounded-md">
         <table className="min-w-full">
@@ -139,6 +157,10 @@ export default function AdminMerchantsPage() {
           )}
         </DialogContent>
       </Dialog>
+<<<<<<< HEAD
     </div>
+=======
+    </AdminLayout>
+>>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
   );
 }
