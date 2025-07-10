@@ -1,175 +1,139 @@
-<<<<<<< HEAD
-// src/app/dashboard/page.tsx
-=======
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 'use client';
 
-import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
-import { BalanceCard } from '@/components/dashboard/balance-card';
-import { ActionButtons } from '@/components/dashboard/action-buttons';
-import { Skeleton } from '@/components/ui/skeleton';
-<<<<<<< HEAD
-import { AlertCircle, Clock, DollarSign, TrendingUp, Users } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { AnimatedPageWrapper } from '@/components/ui/AnimatedPageWrapper'; // Ensure this path is correct
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Loader2, ExternalLink, Shield, Users, BarChart3 } from 'lucide-react';
 
-// Dynamic imports with premium skeleton loaders
-const SpendingChart = dynamic(() => import('@/components/dashboard/spending-chart').then(mod => mod.SpendingChart), {
-  loading: () => <Skeleton className="h-[300px] w-full bg-gray-700 rounded-lg" />,
-=======
+export default function DashboardRouter() {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
 
-const SpendingChart = dynamic(() => import('@/components/dashboard/spending-chart').then(mod => mod.SpendingChart), {
-  loading: () => <Skeleton className="h-[350px]" />,
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
-  ssr: false,
-});
+  useEffect(() => {
+    if (!isLoading && user) {
+      // Check user's role and redirect accordingly
+      const customClaims = user.customClaims;
+      
+      if (customClaims?.role === 'ADMIN') {
+        router.push('/admin');
+      } else if (customClaims?.partnerId) {
+        router.push('/partner');
+      } else {
+        router.push('/user');
+      }
+    }
+  }, [user, isLoading, router]);
 
-const RecentTransactions = dynamic(() => import('@/components/dashboard/recent-transactions').then(mod => mod.RecentTransactions), {
-<<<<<<< HEAD
-  loading: () => <Skeleton className="h-[300px] w-full bg-gray-700 rounded-lg" />,
-});
-
-const FinancialAdvisorCard = dynamic(() => import('@/components/dashboard/financial-advisor-card').then(mod => mod.FinancialAdvisorCard), {
-  loading: () => <Skeleton className="h-[200px] w-full lg:col-span-2 bg-gray-700 rounded-lg" />,
-});
-
-// Placeholder for fetching main app dashboard stats
-// In a real scenario, you'd have a backend function like getDashboardOverviewStats
-interface MainDashboardStats {
-  totalBalancePHP: number;
-  totalTransactionsCount: number;
-  pendingTransactionsCount: number;
-  // Add more stats as needed
-  lastUpdateTimestamp: { toDate: () => Date };
-}
-
-// Mock function for demonstration. Replace with actual backend call.
-const getDashboardOverviewStats = async (): Promise<MainDashboardStats> => {
-  await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-  return {
-    totalBalancePHP: 50123.45,
-    totalTransactionsCount: 128,
-    pendingTransactionsCount: 3,
-    lastUpdateTimestamp: { toDate: () => new Date() },
-  };
-};
-
-export default function DashboardPage() {
-  const { user, isLoading: isAuthLoading } = useAuth();
-  const { toast } = useToast();
-
-  // Fetch general dashboard overview stats
-  const { data: stats, isLoading: isLoadingStats, error: statsError } = useQuery<MainDashboardStats>({
-    queryKey: ['mainDashboardOverview'],
-    queryFn: getDashboardOverviewStats,
-    refetchInterval: 30000, // Refresh every 30 seconds
-  });
-
-  if (isAuthLoading || isLoadingStats) {
+  if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-950 text-white">
-        <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        <p className="ml-4 text-lg text-gray-400">Loading your dashboard...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading dashboard...</p>
+        </div>
       </div>
     );
   }
 
-  if (statsError) {
-    toast({
-      title: "Dashboard Load Error",
-      description: `Failed to load overview data: ${(statsError as Error).message}`,
-      variant: "destructive"
-    });
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Access Required</CardTitle>
+            <CardDescription>
+              Please sign in to access your dashboard.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              onClick={() => router.push('/')} 
+              className="w-full"
+            >
+              Go to Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
   }
 
+  // Show dashboard options while determining role
   return (
-    <AnimatedPageWrapper>
-      <div className="space-y-6 lg:space-y-8 p-4 lg:p-6">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Welcome back, {user?.displayName || 'User'}!</h1>
-          <p className="text-gray-400 text-lg">Here's a summary of your account.</p>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to CPay</h1>
+          <p className="text-gray-600">Choose your dashboard</p>
         </div>
 
-        <BalanceCard /> {/* This card will handle its own loading states and multi-currency */}
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <Card className="bg-gray-800 border border-gray-700 text-white shadow-lg relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent rounded-lg opacity-20"></div>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10">
-              <CardTitle className="text-sm font-medium text-gray-300">Available Balance</CardTitle>
-              <DollarSign className="h-5 w-5 text-primary" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* User Dashboard */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/user')}>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <Users className="h-5 w-5 text-blue-600" />
+                <CardTitle className="text-lg">User Dashboard</CardTitle>
+              </div>
+              <CardDescription>
+                Manage your transactions and account
+              </CardDescription>
             </CardHeader>
-            <CardContent className="z-10">
-              <div className="text-3xl font-bold text-primary-foreground">₱{stats?.totalBalancePHP.toLocaleString('en-PH', { minimumFractionDigits: 2 }) || '0.00'}</div>
-              <p className="text-xs text-gray-400 mt-1">PHP Wallet</p>
+            <CardContent>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Access User Dashboard
+              </Button>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800 border border-gray-700 text-white shadow-lg relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent/10 to-transparent rounded-lg opacity-20"></div>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10">
-              <CardTitle className="text-sm font-medium text-gray-300">Total Transactions</CardTitle>
-              <TrendingUp className="h-5 w-5 text-accent" />
+          {/* Partner Dashboard */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/partner')}>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <BarChart3 className="h-5 w-5 text-green-600" />
+                <CardTitle className="text-lg">Partner Portal</CardTitle>
+              </div>
+              <CardDescription>
+                Manage your business and transactions
+              </CardDescription>
             </CardHeader>
-            <CardContent className="z-10">
-              <div className="text-3xl font-bold text-primary-foreground">{stats?.totalTransactionsCount.toLocaleString() || '0'}</div>
-              <p className="text-xs text-gray-400 mt-1">all types, all time</p>
+            <CardContent>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Access Partner Portal
+              </Button>
             </CardContent>
           </Card>
 
-          <Card className="bg-gray-800 border border-gray-700 text-white shadow-lg relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent rounded-lg opacity-20"></div>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 z-10">
-              <CardTitle className="text-sm font-medium text-gray-300">Pending Actions</CardTitle>
-              <Clock className="h-5 w-5 text-blue-500" />
+          {/* Admin Dashboard */}
+          <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/admin')}>
+            <CardHeader>
+              <div className="flex items-center space-x-2">
+                <Shield className="h-5 w-5 text-red-600" />
+                <CardTitle className="text-lg">Admin Panel</CardTitle>
+              </div>
+              <CardDescription>
+                System administration and monitoring
+              </CardDescription>
             </CardHeader>
-            <CardContent className="z-10">
-              <div className="text-3xl font-bold text-primary-foreground">{stats?.pendingTransactionsCount.toLocaleString() || '0'}</div>
-              <p className="text-xs text-gray-400 mt-1">awaiting confirmation</p>
+            <CardContent>
+              <Button variant="outline" className="w-full">
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Access Admin Panel
+              </Button>
             </CardContent>
           </Card>
         </div>
 
-        <ActionButtons />
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <SpendingChart />
-          <RecentTransactions />
+        <div className="mt-8 text-center">
+          <p className="text-sm text-gray-500">
+            You'll be automatically redirected to the appropriate dashboard based on your role.
+          </p>
         </div>
-
-        <FinancialAdvisorCard />
       </div>
-    </AnimatedPageWrapper>
-=======
-  loading: () => <Skeleton className="h-[350px]" />,
-});
-
-const FinancialAdvisorCard = dynamic(() => import('@/components/dashboard/financial-advisor-card').then(mod => mod.FinancialAdvisorCard), {
-  loading: () => <Skeleton className="h-[250px] lg:col-span-2" />,
-});
-
-
-export default function DashboardPage() {
-  const { user } = useAuth();
-
-  return (
-    <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">Welcome back, {user?.displayName}!</h1>
-        <p className="text-muted-foreground">Here's a summary of your account.</p>
-      </div>
-      <BalanceCard />
-      <ActionButtons />
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <SpendingChart />
-        <RecentTransactions />
-      </div>
-      <FinancialAdvisorCard />
     </div>
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
   );
 }

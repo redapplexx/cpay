@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,11 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-<<<<<<< HEAD
-import { Loader2, Fingerprint, Lock, KeyRound, AlertCircle, ShieldQuestion } from 'lucide-react';
-=======
-import { Loader2, Fingerprint, Lock, KeyRound, AlertCircle } from 'lucide-react';
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
+import { Loader2, Fingerprint, Lock, KeyRound, AlertCircle, ShieldQuestion, ExternalLink, Shield, BarChart3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PatternLock } from '@/components/auth/pattern-lock';
@@ -69,18 +61,14 @@ export default function LoginPage() {
   const { trigger: triggerMobileForm } = mobileForm;
   useEffect(() => {
     if (step === 'mobile') {
-<<<<<<< HEAD
-=======
       // When returning to this step, re-validate the form
       // to ensure the button's disabled state is correct.
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
       triggerMobileForm();
     }
   }, [step, triggerMobileForm]);
 
 
   const handleMobileSubmit = async (values: MobileForm) => {
-<<<<<<< HEAD
     setLoginError(null);
     setIsProcessing(true);
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -102,33 +90,6 @@ export default function LoginPage() {
   };
   
   const handleLoginSuccess = async () => {
-=======
-    // In a real app, this would trigger an API call to send the OTP
-    setLoginError(null);
-    setIsProcessing(true);
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
-    
-    setMobileNumber(values.mobileNumber);
-    setStep('otp');
-    
-    toast({
-        title: 'OTP Sent',
-        description: `A one-time PIN has been sent to ${values.mobileNumber}. For this demo, the code is 123456.`,
-    });
-    setIsProcessing(false);
-  };
-
-  const handleOtpSubmit = async (values: OtpForm) => {
-    setLoginError(null);
-    setIsProcessing(true);
-    // Mock OTP verification
-    if (values.otp !== '123456') {
-        otpForm.setError('otp', { type: 'manual', message: 'Invalid OTP. Please try again.' });
-        setIsProcessing(false);
-        return;
-    }
-    
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
     try {
       await signInAnonymously(auth);
       toast({
@@ -145,7 +106,6 @@ export default function LoginPage() {
            description = 'Your Firebase API key is invalid. Please check your .env file.';
        }
        setLoginError(description);
-<<<<<<< HEAD
     }
   };
 
@@ -162,11 +122,7 @@ export default function LoginPage() {
     localStorage.setItem(`isEnrolled_${mobileNumber}`, 'true');
     await handleLoginSuccess();
     setIsProcessing(false);
-=======
-    } finally {
-        setIsProcessing(false);
-    }
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
+  };
   };
   
   const handlePatternComplete = async (pattern: number[]) => {
@@ -177,13 +133,6 @@ export default function LoginPage() {
         description: `Your pattern is ${pattern.join('-')}. Verifying...`
     });
 
-<<<<<<< HEAD
-    // Simulate PIN verification
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
-    await handleLoginSuccess();
-    setIsProcessing(false);
-=======
     try {
       await signInAnonymously(auth);
       toast({
@@ -203,7 +152,6 @@ export default function LoginPage() {
     } finally {
       setIsProcessing(false);
     }
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
   }
   
   const variants = {
@@ -237,11 +185,7 @@ export default function LoginPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-<<<<<<< HEAD
             className="relative h-60 flex items-center"
-=======
-            className="relative h-40 flex items-center"
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
         >
             <AnimatePresence mode="wait">
                 {step === 'mobile' && (
@@ -252,15 +196,10 @@ export default function LoginPage() {
                         animate="visible"
                         exit="exit"
                         transition={{ duration: 0.3 }}
-<<<<<<< HEAD
                         className="absolute w-full space-y-4"
                     >
                          <h2 className="text-xl font-semibold tracking-tight text-foreground">Welcome to CPay</h2>
                          <p className="text-muted-foreground text-sm">Enter your mobile number to begin.</p>
-=======
-                        className="absolute w-full"
-                    >
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
                          <Form {...mobileForm}>
                           <form
                             onSubmit={mobileForm.handleSubmit(handleMobileSubmit)}
@@ -284,6 +223,34 @@ export default function LoginPage() {
                             </Button>
                           </form>
                         </Form>
+                        
+                        {/* View Dashboard Button */}
+                        <div className="mt-6 pt-4 border-t border-gray-200 space-y-2">
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/dashboard')}
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            View Dashboard
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/admin')}
+                          >
+                            <Shield className="mr-2 h-4 w-4" />
+                            View Admin
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/partner')}
+                          >
+                            <BarChart3 className="mr-2 h-4 w-4" />
+                            View Partner Portal
+                          </Button>
+                        </div>
                     </motion.div>
                 )}
                  {step === 'otp' && (
@@ -333,17 +300,41 @@ export default function LoginPage() {
                             />
                             <Button type="submit" className="w-full" disabled={isProcessing || !otpForm.formState.isValid}>
                               {isProcessing && <Loader2 className="animate-spin mr-2" />}
-<<<<<<< HEAD
-                              Verify &amp; Sign In
-=======
                               Verify & Sign In
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
                             </Button>
                           </form>
                         </Form>
                         <Button variant="link" size="sm" className="mt-2 text-muted-foreground" onClick={() => { setLoginError(null); setStep('mobile'); }} disabled={isProcessing}>
                             Use a different mobile number
                         </Button>
+                        
+                        {/* View Dashboard Button */}
+                        <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/dashboard')}
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            View Dashboard
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/admin')}
+                          >
+                            <Shield className="mr-2 h-4 w-4" />
+                            View Admin
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/partner')}
+                          >
+                            <BarChart3 className="mr-2 h-4 w-4" />
+                            View Partner Portal
+                          </Button>
+                        </div>
                     </motion.div>
                 )}
                 {step === 'pattern' && (
@@ -365,43 +356,42 @@ export default function LoginPage() {
                         ) : (
                             <PatternLock onComplete={handlePatternComplete} />
                         )}
-<<<<<<< HEAD
                          <Button variant="link" size="sm" className="mt-2 text-muted-foreground" onClick={() => { setLoginError(null); setStep('otp'); toast({title: "OTP Sent", description: `A one-time PIN has been sent to ${mobileNumber}. For this demo, the code is 123456.`}) }} disabled={isProcessing}>
                              <ShieldQuestion className="mr-2 h-4 w-4"/>
-=======
-                         <Button variant="link" size="sm" className="mt-2 text-muted-foreground" onClick={() => { setLoginError(null); setStep('mobile'); }} disabled={isProcessing}>
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
                             Sign in with OTP instead
                         </Button>
+                        
+                        {/* View Dashboard Button */}
+                        <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/dashboard')}
+                          >
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            View Dashboard
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/admin')}
+                          >
+                            <Shield className="mr-2 h-4 w-4" />
+                            View Admin
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full" 
+                            onClick={() => router.push('/partner')}
+                          >
+                            <BarChart3 className="mr-2 h-4 w-4" />
+                            View Partner Portal
+                          </Button>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
         </motion.div>
-<<<<<<< HEAD
-=======
-
-
-        <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-muted-foreground">Or continue with</span>
-            </div>
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" disabled>
-                <Fingerprint className="mr-2 h-4 w-4" />
-                Face ID
-            </Button>
-             <Button variant="outline" disabled>
-                <Lock className="mr-2 h-4 w-4" />
-                Sign in with ARC
-            </Button>
-        </div>
-
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
       </div>
     </main>
   );

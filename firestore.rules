@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-// firestore.rules
-
-=======
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-<<<<<<< HEAD
     // Helper function to check if a user is a member of a specific partner
     function isPartnerMember(partnerId) {
       return request.auth != null && request.auth.token.partnerId == partnerId;
@@ -22,24 +16,62 @@ service cloud.firestore {
       return isPartnerMember(partnerId) && request.auth.token.role in roles;
     }
 
-    // --- Partner Portal Rules ---
-    match /partners/{partnerId} {
-      // Any authenticated member of the partner can read the main partner document.
-      allow read: if isPartnerMember(partnerId);
-      
-      // Only an 'OWNER' or 'ADMIN' of that partner can update settings.
-      allow update: if hasPartnerRoles(partnerId, ['OWNER', 'ADMIN']);
-      
-      // Partner documents are created by a CPay super-admin, not by partners themselves.
-      allow create: if false; 
+    // Main CPay User Data
+    match /users/{userId} {
+      allow read, update: if request.auth.uid == userId;
+      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN'; // Core CPay admin
+      allow create: if false; // Created by backend triggers
     }
-    
+
+    match /users/{userId}/wallets/{currency} {
+      allow read: if request.auth.uid == userId;
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN'; // Core CPay admin
+      allow write: if false; // Only updated by trusted backend Cloud Functions
+    }
+
+    // KYC & KYB Submissions
+    match /kycSubmissions/{submissionId} {
+      allow create: if request.auth.uid == request.resource.data.uid;
+      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    match /merchants/{merchantId} {
+      allow create: if request.auth != null;
+      allow read, update: if get(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid)).data.role in ['OWNER', 'APPROVER'];
+      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    match /merchants/{merchantId}/users/{userId} {
+      allow read: if exists(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid));
+      allow write: if get(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid)).data.role == 'OWNER';
+      allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    // Transaction Ledger
+    match /transactions/{transactionId} {
+      allow write: if false; // Immutable from client
+      allow read: if request.auth.uid == resource.data.sender.uid || request.auth.uid == resource.data.receiver.uid;
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
+    }
+
+    // Partner Portal Rules
+    match /partners/{partnerId} {
+      // Core CPay admins can read/write partners (for onboarding partners themselves)
+      allow create, read, update: if request.auth.token.role == 'ADMIN';
+
+      // Partner users can read their own partner's main document if they belong to that partner
+      allow read: if request.auth.token.partnerId == partnerId;
+
+      // Only 'OWNER' role within the partner can update the partner's main document
+      allow update: if request.auth.token.partnerId == partnerId && request.auth.token.role == 'OWNER';
+    }
+
     match /partners/{partnerId}/users/{userId} {
-      // Any member of the partner can see the list of users.
-      allow list, read: if isPartnerMember(partnerId);
-      
-      // Only 'OWNER' or 'ADMIN' can add, update, or remove users from their team.
-      allow write: if hasPartnerRoles(partnerId, ['OWNER', 'ADMIN']);
+      // A partner user can read users in their OWN partner's sub-collection
+      allow read: if request.auth.token.partnerId == partnerId;
+
+      // Only 'OWNER' or 'ADMIN' roles within the partner can create/update/delete partner_users
+      allow write: if request.auth.token.partnerId == partnerId && request.auth.token.role in ['OWNER', 'ADMIN'];
     }
 
     match /partners/{partnerId}/payoutBatches/{batchId} {
@@ -70,77 +102,8 @@ service cloud.firestore {
         allow read: if hasPartnerRoles(partnerId, ['ADMIN', 'OWNER']);
         allow write: if false;
     }
-    
-    // --- Existing CPay Rules (ensure they are separate and still apply) ---
-    match /users/{userId} {
-      allow read, update: if request.auth.uid == userId;
-      allow create: if false;
-    }
-    
-    match /transactions/{transactionId} {
-      allow read: if request.auth.uid == resource.data.sender.uid || request.auth.uid == resource.data.receiver.uid;
-      allow write: if false;
-    }
-=======
-    // Main CPay User Data (Existing)
-    match /users/{userId} {
-      allow read, update: if request.auth.uid == userId;
-      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN'; // Core CPay admin
-      allow create: if false; // Created by backend triggers
-    }
 
-    match /users/{userId}/wallets/{currency} {
-      allow read: if request.auth.uid == userId;
-      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN'; // Core CPay admin
-      allow write: if false; // Only updated by trusted backend Cloud Functions
-    }
-
-    // KYC & KYB Submissions (Existing)
-    match /kycSubmissions/{submissionId} {
-      allow create: if request.auth.uid == request.resource.data.uid;
-      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
-    }
-
-    match /merchants/{merchantId} {
-      allow create: if request.auth != null;
-      allow read, update: if get(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid)).data.role IN ['OWNER', 'APPROVER'];
-      allow read, update: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
-    }
-
-    match /merchants/{merchantId}/users/{userId} {
-      allow read: if exists(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid));
-      allow write: if get(/databases/$(database)/documents/merchants/$(merchantId)/users/$(request.auth.uid)).data.role == 'OWNER';
-      allow read, write: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
-    }
-
-    // Transaction Ledger (Existing)
-    match /transactions/{transactionId} {
-      allow write: if false; // Immutable from client
-      allow read: if request.auth.uid == resource.data.sender.uid || request.auth.uid == resource.data.receiver.uid;
-      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'ADMIN';
-    }
-
-    //======= PARTNER PORTAL RULES =======//
-    match /partners/{partnerId} {
-      // Core CPay admins can read/write partners (for onboarding partners themselves)
-      allow create, read, update: if request.auth.token.role == 'ADMIN';
-
-      // Partner users can read their own partner's main document if they belong to that partner
-      allow read: if request.auth.token.partnerId == partnerId;
-
-      // Only 'OWNER' role within the partner can update the partner's main document
-      allow update: if request.auth.token.partnerId == partnerId && request.auth.token.role == 'OWNER';
-    }
-
-    match /partners/{partnerId}/users/{userId} {
-      // A partner user can read users in their OWN partner's sub-collection
-      allow read: if request.auth.token.partnerId == partnerId;
-
-      // Only 'OWNER' or 'ADMIN' roles within the partner can create/update/delete partner_users
-      allow write: if request.auth.token.partnerId == partnerId && request.auth.token.role IN ['OWNER', 'ADMIN'];
-    }
-
-    // Payout Batches (Future collection)
+    // Payout Batches (Global collection)
     match /payoutBatches/{batchId} {
         // Only partner users of the associated partner can read/create payout batches
         allow create: if request.auth.token.partnerId == request.resource.data.partnerId;
@@ -149,21 +112,21 @@ service cloud.firestore {
         allow update, delete: if false;
     }
 
-    // Payout Logs (Future collection)
+    // Payout Logs (Global collection)
     match /payoutLogs/{logId} {
         // Only partner users of the associated partner can read payout logs
         allow read: if request.auth.token.partnerId == resource.data.partnerId;
         allow write: if false; // Only written by backend functions
     }
 
-    // Webhook Logs (Future collection)
+    // Webhook Logs (Global collection)
     match /webhookLogs/{logId} {
         // Only partner users of the associated partner can read webhook logs
         allow read: if request.auth.token.partnerId == resource.data.partnerId;
         allow write: if false; // Only written by backend functions
     }
 
-    // Audit Logs (Future collection)
+    // Audit Logs (Global collection)
     match /auditLogs/{logId} {
         // Partner users can read audit logs for their own partnerId
         allow read: if request.auth.token.partnerId == resource.data.partnerId;
@@ -172,6 +135,28 @@ service cloud.firestore {
         allow write: if false; // Only written by backend functions
     }
 
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
+    // Admin Audit Logs
+    match /adminAuditLogs/{logId} {
+        // Only admins can read admin audit logs
+        allow read: if request.auth.token.role == 'ADMIN';
+        allow write: if false; // Only written by backend functions
+    }
+
+    // ML Collections
+    match /mlModels/{modelId} {
+        allow read: if request.auth.token.role == 'ADMIN';
+        allow write: if false; // Only written by backend functions
+    }
+
+    match /mlAnalytics/{analyticsId} {
+        allow read: if request.auth.token.role == 'ADMIN';
+        allow write: if false; // Only written by backend functions
+    }
+
+    match /trainingData/{dataId} {
+        allow read: if request.auth.token.role == 'ADMIN';
+        allow write: if false; // Only written by backend functions
+    }
+
   }
 }

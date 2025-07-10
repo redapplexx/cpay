@@ -1,11 +1,8 @@
-const { onCall } = require('firebase-functions/v2/https');
-const admin = require('firebase-admin');
+// Export all functions
+const { createAdminUser, createWinnyAdmin, verifyAdminUser } = require('./admin/createAdmin');
 
-admin.initializeApp();
-
-exports.helloWorld = onCall((request) => {
-  return {
-    message: 'Hello from CPay Functions!',
-    timestamp: new Date().toISOString()
-  };
-}); 
+module.exports = {
+  createAdminUser,
+  createWinnyAdmin,
+  verifyAdminUser,
+}; 

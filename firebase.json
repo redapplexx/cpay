@@ -1,5 +1,4 @@
 {
-<<<<<<< HEAD
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
@@ -10,16 +9,11 @@
   },
   "hosting": {
     "public": "app",
-=======
-  "hosting": {
-    "source": ".",
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
-<<<<<<< HEAD
     "rewrites": [
       {
         "source": "**",
@@ -70,10 +64,5 @@
       "port": 9299
     },
     "singleProjectMode": true
-=======
-    "frameworksBackend": {
-      "region": "asia-east1"
-    }
->>>>>>> a5dccd17e1ecf3d6883cf1f61b4d531b45beabd3
   }
 }
